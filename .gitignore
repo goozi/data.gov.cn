@@ -1,3 +1,9 @@
 .svn
 web/WEB-INFO/classes
 *.iml
+.idea
+.settings
+.project
+.light
+.classpath
+
