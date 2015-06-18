@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-	<bean id="Security" class="com.dhccity.base.entity.BaseSecurity" singleton="false"></bean>
-	<bean id="Menu" class="com.dhccity.base.entity.BaseMenu" singleton="false"></bean>
-	<bean id="Department" class="com.dhccity.base.entity.BaseDepartment" singleton="false"></bean>
-</beans>

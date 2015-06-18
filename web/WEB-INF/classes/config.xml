@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="GBK"?>
-<config>
-   <system-name>数据开放平台</system-name>
-	<database>ORACLE</database>
-	<menu treelevel="2" />
-    <path></path>
-</config>
