@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_MENU-->
+<!--<mapping resource="com/kingtop/base/hbm/BASE_MENU.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseMenu" table="BASE_MENU">
+		<id name="id"  column="ID">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property name="name"  column="NAME"/>
+		<property name="state"  column="STATE"/>
+		<property name="sequ"  column="SEQU"/>
+		<property name="parentId"  column="PARENT_ID"/>
+		<property name="value"  column="VALUE"/>
+		<property name="target"  column="TARGET"/>
+		<property name="securityId"  column="SECURITY_ID"/>
+		<property name="explain"  column="EXPLAIN"/>
+		<property name="meno"  column="MENO"/>
+	</class>
+</hibernate-mapping>

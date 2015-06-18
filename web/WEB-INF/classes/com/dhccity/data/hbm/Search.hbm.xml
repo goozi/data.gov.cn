@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.dhccity.data.entity.Search" table="SEARCH" schema="DGC">
+        <id name="id">
+            <column name="ID" sql-type="number" precision="22" not-null="true"/>
+            <generator class="identity">
+            </generator>
+        </id>
+        <property name="keyword">
+            <column name="KEYWORD" sql-type="varchar2" length="500"/>
+        </property>
+        <property name="type">
+            <column name="TYPE" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="createTime" type="timestamp">
+            <column name="CREATE_TIME" sql-type="date" />
+        </property>
+        <property name="lastTime" type="timestamp">
+            <column name="LAST_TIME" sql-type="date"/>
+        </property>
+        <property name="totalCount">
+            <column name="TOTAL_COUNT" sql-type="number" precision="12"/>
+        </property>
+        <property name="lastWeekCount">
+            <column name="LAST_WEEK_COUNT" sql-type="number" precision="12"/>
+        </property>
+        <property name="lastMonthCount">
+            <column name="LAST_MONTH_COUNT" sql-type="number" precision="12"/>
+        </property>
+        <property name="lastYearCount">
+            <column name="LAST_YEAR_COUNT" sql-type="number" precision="12"/>
+        </property>
+    </class>
+</hibernate-mapping>

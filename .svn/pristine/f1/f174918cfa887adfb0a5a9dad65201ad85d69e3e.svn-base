@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_USER_PARAMETER-->
+<!--<mapping resource="com/kingtop/base/hbm/BASE_USER_PARAMETER.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseUserParameter" table="BASE_USER_PARAMETER">
+		<id name="id"  column="ID">
+			<generator class="native">
+				<param name="sequence">BASE_USER_PARAMETER_ID_SEQU</param>
+			</generator>
+		</id>
+		<property name="userId"  column="USER_ID"/>
+		<property name="code"  column="CODE"/>
+		<property name="value"  column="VALUE"/>
+	</class>
+</hibernate-mapping>

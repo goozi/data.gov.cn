@@ -1,0 +1,133 @@
+<%@ page contentType="text/html; charset=GBK" %>
+<%@ include file="../include.jsp" %>
+<%@ page import="com.dhccity.base.entity.BaseUser" %>
+<%@ page import="com.dhccity.base.entity.BaseUserGroup" %>
+<%
+	int currPage=req.getInt("currPage")==0?1:req.getInt("currPage");
+	int pageSize=parameter.pageSize;
+	String type=req.getString("type");
+	String searchField=req.getString("searchField");
+	String searchValue=req.getString("searchValue");
+	long departmentId=req.getLong("departmentId");
+	long dutyId=req.getLong("dutyId");
+	long roleId=req.getLong("roleId");
+	int state=req.getInt("state");
+	String pageUrl=req.getPageUrl();
+	Iterator it;	
+	BaseUser oBaseUser=new BaseUser();
+	if (req.getString("search").equals(""))
+		it = oBaseUser.findPageByType(type,currPage,pageSize).iterator();
+	else
+		it = oBaseUser.search(type,searchField,searchValue,departmentId,dutyId,roleId,state,currPage,pageSize).iterator();
+	Page oPage=oBaseUser.getPage();	  
+%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<LINK  href="../style/default.css" rel=stylesheet>
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="../js/body.js"></script>
+<script type="text/javascript" src="../js/table.js"></script>
+<%@ include file="../easyui_include.jsp"%>
+<title><%=Config.SystemName%></title>
+</head>
+<body>
+<% if (user.checkFunction("USER","ADMIN")) {%>
+<table border="0" cellpadding="0" cellspacing="0" width="95%" align="center">
+  <tr> 
+    <td width="100%"> <table width="100%" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td colspan="2" height="10"> </td>
+        </tr>
+        <tr> 
+          <td width="68%"> <input type=button class="btn"  onClick="location.href='user_add.jsp';"  border="0" name="add" value="新建" > 
+            <input type=button class="btn"  onClick="editData(document.getElementsByName('idArray'),'user_edit.jsp?id=')"  border="0" name="edit" value="编辑" > 
+            <input type=button class="btn"  onClick="doDelete(0);"  border="0" name="delete" value="删除">
+            <input type=button class="btn"  onClick="doDelete(1);"  border="0" name="resume" value="恢复"> 
+            <input type=button class="btn"  border="0" name="selectAll" value="全选" onClick="selectAll(document.getElementsByName('idArray'))"> 
+            <input type=button class="btn"  border="0" name="inverse" value="反选" onClick="inverse(document.getElementsByName('idArray'))" > 
+          </td>
+          <td width="31%" height="30" align="right" >&nbsp; </td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<%}%>
+<form id="searchForm" name="searchForm" method="post" action="user_list.jsp">
+<table class="query_table"  cellspacing=0 cellpadding=0 width="95%" align=center  border=0 >
+
+  <tr> 
+    <td height="34" ><input name="type" type="hidden" value="<%=type%>"> &nbsp; 
+      <select name="searchField" SelectValue="<%=searchField%>">
+        <option selected value="name">名称</option>
+        <option value="loginName">登录名</option>
+        <option value="tel">办公电话</option>
+        <option value="identityCard">身份证号码</option>
+      </select>：<input size="20" name="searchValue" value="<%=searchValue%>" validType="maxLength[100]" class="easyui-validatebox" required="true"> 部门： 
+      <select name="departmentId" SelectValue="<%=departmentId%>"><option value="0">┌全部</option><%=TreeApp.createOption("Department",TreeApp.ID)%></select>       
+      职务: <select name="dutyId" SelectValue="<%=dutyId%>"><option value="0">全部</option><%=TypeApp.createOption("DUTY",TypeApp.ID)%></select>
+      角色: <select name="roleId" SelectValue="<%=roleId%>"><option value="0">全部</option><%=TypeApp.createOption("ROLE",TypeApp.ID)%></select>
+      <input type="checkbox" value="-1" name="state" <%=state==-1?"checked":""%>>
+        已删除用户</td>
+    <td width="6%" ><input type="submit" class="btn"  border="0" name="search" value="搜索" ></td>
+  </tr>
+  
+</table>
+</form>
+<br>
+<table class="list" FixRow="<%=pageSize%>" cellspacing=1 cellpadding=0 width="95%" align=center  border=0 >
+  <tbody>
+    <tr class="title"   > 
+      <td  width="4%" height="24">选择</td>
+      <td  width="14%" >姓名</td>
+      <td  width="26%">部门</td>
+      <td  width="17%">职务</td>
+      <td  width="19%">办公电话</td>
+      <td  width="20%">手机电话</td>
+    </tr>
+    <%
+	while (it.hasNext())
+	{
+		BaseUser baseUser = (BaseUser) it.next();
+%>
+    <tr class="odd"> 
+      <td ><input name="idArray" type="checkbox" value="<%=baseUser.getId()%>"></td>
+      <td  align="left"><a href="user_view.jsp?id=<%=baseUser.getId()%>"><%=baseUser.getName()%></a></td>
+      <td align="left"><%=baseUser.getDepartmentName()%></td>
+      <td align="left"><%=BaseUserGroup.getDutyName(baseUser.getId())%></td>
+      <td><%=baseUser.getTel()%></td>
+      <td><%=baseUser.getMobileTel()%></td>
+    </tr>
+    <%
+	}
+%>
+  </tbody>
+</table>
+<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" >
+  <tr>
+    <td width="50%" height="33" align="left"><%=oPage.getInfo()%></td>
+    <td width="50%" align="right"><%=oPage.getButton(pageUrl)%></td>
+  </tr>
+</table>
+</body>
+</html>
+<script language="javascript">
+//删除--恢复选中记录
+function doDelete(state)
+{
+	if (setupData(document.getElementsByName('idArray'),'userAction.do?action=updateState&state=' + state))
+	document.location.reload();
+}
+
+
+//响应搜索按钮
+// function doSearch()
+// {
+// 	if($('#searchForm').form('validate')){
+// 		$('#searchForm').submit();
+// 	};	
+// }
+$('#searchForm').submit(function(){
+	return $('#searchForm').form('validate');
+});
+</script>

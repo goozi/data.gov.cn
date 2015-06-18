@@ -1,0 +1,360 @@
+<PUBLIC:COMPONENT  Version="1.0" >
+
+/**
+ * <p>Title: Select封闭类 </p>
+ * <p>Description:</p>
+ * <p>Company: Kingtop</p>
+ * <p>CreateDate: 2005-05-18 09:36</p>
+ * @author liuxd
+ * @version 1.0
+ */
+
+
+<PUBLIC:PROPERTY name="SubName" />													//子Select 名称
+<PUBLIC:PROPERTY name="NodeXmlSrc" />												//Xml文件地址
+<PUBLIC:PROPERTY name="First" />													//是否是首个Select 与 NodeXmlSrc一起使用
+
+<PUBLIC:PROPERTY name="XmlObj"/>													//Xml对象
+
+<PUBLIC:PROPERTY name="SelectValue"/>												//默认选中值
+<PUBLIC:PROPERTY name="SelectText"/>												//默认选中文本
+
+<PUBLIC:PROPERTY name="LeftName" />													//左边列表框名称
+<PUBLIC:PROPERTY name="RightName"/>													//右边列表框名称
+
+<PUBLIC:PROPERTY name="isAll"/>														//是否包括全部
+
+
+
+
+<PUBLIC:ATTACH event="ondocumentready" HANDLER="doInit"/>							//document 加载完毕
+<PUBLIC:ATTACH event="onchange" HANDLER="doChange"/>								//响应Select变化
+
+<PUBLIC:METHOD   NAME="addSelectedOption"/>													//增加选项
+<PUBLIC:METHOD   NAME="addAllOption"/>													//增加所有选项
+
+<PUBLIC:METHOD   NAME="delSelectedOption"/>													//删除选项
+<PUBLIC:METHOD   NAME="delAllOption"/>													//删除所有选项
+
+<PUBLIC:METHOD   NAME="moveSelectedOption"/>													//移动选项
+<PUBLIC:METHOD   NAME="moveAllOption"/>													//移动所有选项
+
+
+
+
+
+
+
+<SCRIPT language="javascript">
+var iIndex = null;
+var isDoSelect;
+/**
+* 初始化
+*/
+function doInit()
+{
+	if(NodeXmlSrc!=null && First=="true")											//第一个列表框
+	{		
+		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false";
+		xmlDoc.load(NodeXmlSrc);
+
+		element.XmlObj=xmlDoc.documentElement;	
+		
+		for (var i=options.length-1;i>=0;i--)										//删除数据
+		{
+			options[i]=null;
+		}	
+
+		for (i=0;i<XmlObj.childNodes.length;i++)									//填充数据
+		{
+			labels=XmlObj.childNodes(i).getAttribute("text");
+			values=XmlObj.childNodes(i).getAttribute("value");			
+			this.add(document.createElement("OPTION"));
+			this.options[i].text=labels;
+			this.options[i].value=values;			
+		}	
+		setSelect();
+		doChange();
+	}	
+	else
+	{
+		setSelect();
+		doChange();
+	}	
+}
+
+
+/**
+ * 设置默认选项
+ * @return
+ */
+function setSelect()
+{
+	if (SelectText!=null)															//默认选中文本
+	{
+	  for (i=0;i<this.options.length;i++)
+	  {
+		 if (this.options[i].text==SelectText)
+		 {
+			 this.options[i].selected=true;			 
+		 } 		
+	  }
+	}
+	
+	if (SelectValue!=null)															//默认选中值
+	{
+	  for (i=0;i<this.options.length;i++)
+	  {
+		 if (this.options[i].value==SelectValue)
+		 {
+			 this.options[i].selected=true;				 
+		 } 		
+	  }
+	}	
+
+	
+}
+
+/**
+ * 处理选项变化事件
+ * @return
+ */
+function doChange()
+{
+	try
+	{
+		if (SubName==null)															//没有下级Select
+		{		
+			event.returnValue = false;		
+			return;
+		}
+		
+		var subObj=element.document.all(SubName);									//下级Select
+		
+		
+		if (subObj==null)															//下级Select对象不存在
+		{			
+			event.returnValue = false;
+			return;
+		}		
+
+		var subXmlObj=XmlObj.childNodes(selectedIndex);								//读取被选中的XML数据
+
+		
+
+		
+		for (var i=subObj.options.length-1;i>=0;i--)								//删除子列表数据
+		{
+			subObj.options[i]=null;		
+		}	
+
+		subObj.detachEvent("onchange");												//去除响应改变事件
+		for (j=0;j<subXmlObj.childNodes.length;j++)									//增加子列表数据
+		{
+			labels=subXmlObj.childNodes(j).getAttribute("text");
+			values=subXmlObj.childNodes(j).getAttribute("value");
+			subObj.add(document.createElement("OPTION"));
+			subObj.options[j].text=labels;
+			subObj.options[j].value=values; 				
+		}		
+		subObj.attachEvent("onchange");												//增加响应改变事件
+		subObj.XmlObj=subXmlObj;
+
+		/*
+		
+		if (subXmlObj.childNodes.length==0)											//当子选项为0时，隐掉子列表
+		{
+			subObj.style.display ="none";
+		}	
+		else
+		{
+			subObj.style.display ="";
+		}
+		*/
+		subObj.fireEvent("onchange");												//触发响应改变事件
+
+	}
+	catch (e)
+	{ ;} 
+	
+}
+
+/**
+ * 增加选项
+ * sTyle right 向右边[rightNmae]Select增加选项 ,left 向左边[leftNmae]Select增加选项 
+ * @return
+ */
+function moveSelectedOption(sTyle)
+{
+	if (sTyle=="right")
+	{
+		var oSelect=element.document.all(RightName);
+	}
+	else
+	{
+		var oSelect=element.document.all(LeftName);
+	}	
+	for (var i=0; i<options.length; i++)
+	{
+		if (options[i].selected)
+		{
+			sValue = options[i].value;
+			sText = options[i].text;
+			var j=oSelect.options.length;
+			oSelect.add(document.createElement("OPTION"));
+			oSelect.options[j].text=sText;
+			oSelect.options[j].value=sValue; 			
+		}		
+	}	
+	for (var j=options.length-1;j>=0;j--)
+	{
+		if (options[j].selected)
+		{
+			options[j]=null;
+		}
+	}
+}
+
+/**
+ * 增加所有选项
+ * sTyle right 向右边[rightNmae]Select增加选项 ,left 向左边[leftNmae]Select增加选项 
+ * @return
+ */
+function moveAllOption(sTyle)
+{
+	if (sTyle=="right")
+	{
+		var oSelect=element.document.all(RightName);
+	}
+	else
+	{
+		var oSelect=element.document.all(LeftName);
+	}	
+	for (var i=0; i<options.length; i++)
+	{
+			sValue = options[i].value;
+			sText = options[i].text;
+			var j=oSelect.options.length;
+			oSelect.add(document.createElement("OPTION"));
+			oSelect.options[j].text=sText;
+			oSelect.options[j].value=sValue;				
+	}	
+	for (var j=options.length-1;j>=0;j--)
+	{
+		options[j]=null;		
+	}
+}
+
+/**
+ * 增加选项
+ * sTyle right 向右边[rightNmae]Select增加选项 ,left 向左边[leftNmae]Select增加选项 
+ * @return
+ */
+function addSelectedOption(sTyle)
+{
+	var isHad=false;
+	if (sTyle=="right")
+	{
+		var oSelect=element.document.all(RightName);
+	}
+	else
+	{
+		var oSelect=element.document.all(LeftName);
+	}	
+	for (var i=0; i<options.length; i++)
+	{
+		if (options[i].selected)
+		{
+			sValue = options[i].value;
+			sText = options[i].text;
+			isHad=false;
+			for (var n=0; n<oSelect.options.length; n++)
+			{
+				if (oSelect.options[n].value==sValue&&oSelect.options[n].text==sText)
+				{
+					isHad=true;
+					break;
+				}				
+			}
+			if (isHad)
+			{
+				break;
+			}
+			var j=oSelect.options.length;
+			oSelect.add(document.createElement("OPTION"));
+			oSelect.options[j].text=sText;
+			oSelect.options[j].value=sValue; 			
+		}		
+	}	
+}
+
+/**
+ * 增加所有选项
+ * sTyle right 向右边[rightNmae]Select增加选项 ,left 向左边[leftNmae]Select增加选项 
+ * @return
+ */
+function addAllOption(sTyle)
+{
+	var isHad=false;
+	if (sTyle=="right")
+	{
+		var oSelect=element.document.all(RightName);
+	}
+	else
+	{
+		var oSelect=element.document.all(LeftName);
+	}	
+	for (var i=0; i<options.length; i++)
+	{
+			sValue = options[i].value;
+			sText = options[i].text;
+			for (var n=0; n<oSelect.options.length; n++)
+			{
+				if (oSelect.options[n].value==sValue&&oSelect.options[n].text==sText)
+				{
+					isHad=true;
+					break;
+				}				
+			}
+			if (isHad)
+			{
+				break;
+			}			var j=oSelect.options.length;
+
+			oSelect.add(document.createElement("OPTION"));
+			oSelect.options[j].text=sText;
+			oSelect.options[j].value=sValue;				
+	}		
+}
+
+/**
+ * 删除选项
+ * @return
+ */
+function delSelectedOption()
+{
+	for (var j=options.length-1;j>=0;j--)
+	{
+		if (options[j].selected)
+		{
+			options[j]=null;
+		}
+	}
+}
+
+/**
+ * 删除所有选项
+ * @return
+ */
+function delAllOption()
+{
+	
+	for (var j=options.length-1;j>=0;j--)
+	{
+		options[j]=null;		
+	}
+}
+
+</SCRIPT>
+</PUBLIC:COMPONENT>

@@ -1,0 +1,88 @@
+package com.dhccity.base.business;
+
+import java.text.*;
+import java.util.*;
+
+import com.dhccity.base.entity.*;
+
+/**
+ * 参数获取业务类
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2007</p>
+ * <p>Company: 厦门市精图信息技术有限公司</p>
+ * @author Liuxd
+ * @version 1.0
+ */
+
+public class ParameterApp
+{
+
+	/**
+	 * 通过代码code获得字符型参数值
+	 * @param code String 参数代码
+	 * @return String
+	 */
+	public static String getString(String code)
+	{
+		BaseParameter baseParameter = new BaseParameter().findByCode(code);
+		return baseParameter == null ? "" : baseParameter.getValue();
+	}
+
+	/**
+	 * 通过代码code获得整数型参数值
+	 * @param code String 参数代码
+	 * @return int
+	 */
+	public static int getInt(String code)
+	{
+		try
+		{
+			BaseParameter baseParameter = new BaseParameter().findByCode(code);
+			return Integer.parseInt(baseParameter.getValue());
+		}
+		catch (Exception ex)
+		{
+			return 0;
+		}
+	}
+
+	/**
+	 * 通过代码code获得浮点型参数值
+	 * @param code String   参数代码
+	 * @return float
+	 */
+	public static float getFloat(String code)
+	{
+		try
+		{
+			BaseParameter baseParameter = new BaseParameter().findByCode(code);
+			return Float.parseFloat(baseParameter.getValue());
+		}
+		catch (Exception ex)
+		{
+			return 0;
+		}
+	}
+
+	/**
+	 * 通过代码code获得日期型参数值
+	 * @param code String  参数代码
+	 * @return float
+	 */
+	public static Date getDate(String code)
+	{
+		BaseParameter baseParameter = new BaseParameter().findByCode(code);
+		Date date = null;
+		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd");
+		try
+		{
+			date = dataFormat.parse(baseParameter.getValue());
+		}
+		catch (Exception ex)
+		{
+			;
+		}
+		return date;
+	}
+}

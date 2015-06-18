@@ -1,0 +1,124 @@
+package com.dhccity.base.entity;
+
+import org.light.*;
+
+/**
+ * <p>Title: BASE_DOCUMENT_TYPE 表对应类</p>
+ * <p>Description:BASE_DOCUMENT_TYPE</p>
+ * <p>Company: dhccity</p>
+ * <p>CreateDate: 2005-05-20 17:26</p>
+ * @author liuxd
+ * @version 1.0
+ */
+
+public class BaseDocumentType extends Ado
+{
+	private long id;	//ID
+	private String postfix;		//后缀
+	private String icon;		//图标文件名称
+	private String type;		//文件类型
+	private String mime;		//文件打开名称
+
+	public BaseDocumentType()
+	{
+	}
+
+	public BaseDocumentType(long id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * 对应字段：[ID]  类型：NUMBER(22)
+	 */
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * 对应字段：[ID]  类型：NUMBER(22)
+	 */
+	public long getId()
+	{
+		return this.id;
+	}
+
+	/**
+	 * 对应字段：[后缀]  类型：VARCHAR2(200)
+	 */
+	public void setPostfix(String postfix)
+	{
+		this.postfix = postfix;
+	}
+
+	/**
+	 * 对应字段：[后缀]  类型：VARCHAR2(200)
+	 */
+	public String getPostfix()
+	{
+		return this.postfix == null ? "" : this.postfix;
+	}
+
+	/**
+	 * 对应字段：[后缀]  类型：VARCHAR2(200)
+	 */
+	public void setIcon(String icon)
+	{
+		this.icon = icon;
+	}
+
+	/**
+	 * 对应字段：[后缀]  类型：VARCHAR2(200)
+	 */
+	public String getIcon()
+	{
+		return this.icon == null ? "" : this.icon;
+	}
+
+	/**
+	 * 对应字段：[文件类型]  类型：VARCHAR2(200)
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+
+	/**
+	 * 对应字段：[文件类型]  类型：VARCHAR2(200)
+	 */
+	public String getType()
+	{
+		return this.type == null ? "" : this.type;
+	}
+
+	/**
+	 * 对应字段：[文件打开名称]  类型：VARCHAR2(200)
+	 */
+	public void setMime(String mime)
+	{
+		this.mime = mime;
+	}
+
+	/**
+	 * 对应字段：[文件打开名称]  类型：VARCHAR2(200)
+	 */
+	public String getMime()
+	{
+		return this.mime == null ? "" : this.mime;
+	}
+
+	//===============================以下为自编辑代码===================================
+
+	/**
+	 * 通过后缀类型获得类型图标文件名称
+	 * @param postfix String
+	 * @return BaseDocumentType
+	 */
+	public BaseDocumentType findByPostfix(String postfix)
+	{
+		String hql = "from BaseDocumentType o where o.postfix='" + postfix.toUpperCase() + "'";
+		return (BaseDocumentType)this.findObject(hql);
+	}
+
+}

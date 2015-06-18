@@ -1,0 +1,533 @@
+<PUBLIC:COMPONENT>
+<PUBLIC:ATTACH event="ondocumentready" HANDLER="doInit"/>
+<PUBLIC:PROPERTY name="NodeXmlSrc" />
+<PUBLIC:METHOD   NAME="SlideFolders"/>
+<PUBLIC:METHOD   NAME="ArrowSelected"/>
+<PUBLIC:METHOD   NAME="ArrowClicked"/>
+<PUBLIC:METHOD   NAME="OverArrow"/>
+<PUBLIC:METHOD   NAME="OutArrow"/>
+<PUBLIC:METHOD   NAME="ClickButton"/>
+<PUBLIC:METHOD   NAME="SlideItems"/>
+<PUBLIC:METHOD   NAME="ItemClicked"/>
+<PUBLIC:METHOD   NAME="ItemSelected"/>
+<PUBLIC:METHOD   NAME="OverItems"/>
+<PUBLIC:METHOD   NAME="OutItems"/>
+<PUBLIC:METHOD   NAME="MenuItemsSelected"/>
+<public:property name="FilesDir" />		
+<public:property name="TreeLevel" />	
+
+
+<SCRIPT language="javascript">
+
+
+
+var backgroundColor="efefef";							//背景色
+var borderWidth=0;										//border宽度
+var borderStyle="solid";								//border风格
+var borderColor="000000";								//border颜色
+
+var itemsSpacing=25;									//2个图标间的距离
+var iconsWidth=32;										//图标宽度
+var iconsHeight=32;										//图标高度
+var tabMargin=10;										//菜单距离下面第一个图标象素值
+
+var buttonFontFamily="宋体";								//按钮上字体的字型
+var buttonFontSize=9;									//按钮上字体大小 
+var buttonFontColor="#ffffff";							//按钮上字体颜色    
+var buttonWidth=118;									//按钮的宽度
+var buttonHeight=22;									//按钮的高度
+
+var labelFontFamily="宋体";								//图标下字体的字型
+var labelFontSize=9;									//图标下面的字体大小
+var labelFontColor="#333333";							//图标下的字体颜色
+var labelMargin=-3;										//图标和文字距离
+
+var arrowSlideSpeed=8;									//项目列表滚动的速度；
+var slideSpeed=4;										//菜单运动速度
+
+
+var buttonBGImg=FilesDir + "images/menubar_bg.gif";		//按钮的背景图
+var upArrowImg=FilesDir + "images/arrow_up.gif";			//向上滚动的logo箭头	
+var downArrowImg=FilesDir + "images/arrow_down.gif";		//向下滚动的logo箭头
+
+var menuWidth=30;										//左菜单宽度
+var menuBackgroundColor="#C3CCF5"						//左菜单背景色
+var menuIconHeight=24;									//左菜单图标长度
+var menuIconWidth=24;									//左菜单图标宽度
+
+
+//以下参数不能修改
+var visibleHeight=0;									//有效高度
+var visibleWidth=0;										//有效宽度
+var slideCount=0;										//滚动记录
+var slideStep=1;										//滚动步长
+var currTab=0;											//当前标签
+var sliding=false;										//是否正在滚动
+var upButton;											//向上按钮
+var downButton;											//向下按钮
+var rightMenu;											//右边菜单对象
+var tabCount=0;											//标签个数
+var xmlObj;												//XML对象
+var leftMenuCount=0;									//左边菜单个数
+
+var slideArrowValue=iconsHeight+labelFontSize+itemsSpacing;
+
+var firstTitle="",secondTitle="",thirdTitle="";
+
+
+
+/**
+* 初始化菜单框
+*/
+function doInit()
+{	
+	top=eval(top);
+	left=eval(left);	
+	height=eval(height);
+	width=eval(width);
+	var html="";
+
+	if(NodeXmlSrc!=null)		  
+	{
+		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async="false";
+		xmlDoc.load(NodeXmlSrc);
+		xmlObj=xmlDoc.documentElement;	
+	}
+
+	if (TreeLevel==3)						//三层菜单
+	{
+		html="<DIV style='position:absolute;top:" + top + ";left:"+ left + ";width:"+ menuWidth + ";height:"+ height +";background-color:"+menuBackgroundColor+";z-index:0;'>";
+		left=left + menuWidth;	
+
+		html+="<table width='" + menuWidth +"' border='0' cellpadding='0' cellspacing='0'><tr height=4><td></td></tr>";
+		for (var i=0;i<xmlObj.childNodes.length;i++)
+		{
+			var subObj=xmlObj.childNodes(i);
+			
+			html+="<tr id='OB_Menu" + i  + "' height='40' message='" + subObj.getAttribute("Title") + "' style='cursor:hand;' onclick='"  + id +  ".MenuItemsSelected(" + i + ")'><td align='center'><img src='" + subObj.getAttribute("Img") +"' width=" + menuIconWidth +  " height=" + menuIconHeight + " title='"+ subObj.getAttribute("Title")+"'></td></tr>";
+			html+="<tr id='OB_MenuT" + i + "' style='display:none' style='cursor:hand;' bgcolor='D1D8F3'><td><table width='100%' border='0' cellpadding='0' cellspacing='0'><tr height='3' style='cursor:hand;' bgcolor='#91A1EE'><td></td></tr>";
+			html+="<tr height=3><td ></td></tr>";
+			html+="<tr ><td align='center' style='font-size:"+labelFontSize+"pt;'><img src='" + subObj.getAttribute("Img") +"' width=" + menuIconWidth + " height=" + menuIconHeight + "></td></tr>";
+			html+="<tr height=5><td ></td></tr>";
+			html+="<tr ><td align='center' style='font-size:"+labelFontSize+"pt;'>" + changeText(subObj.getAttribute("Title"))+ "</td></tr>";
+			html+="<tr height=3><td ></td></tr>";
+			html+="<tr height='3' style='cursor:hand;' bgcolor='#DEE3F7'><td></td></tr></table></td></tr>";
+			
+			leftMenuCount++;
+			
+		}
+		html+="</table>";		
+		html+="</DIV>";
+	}
+	else
+	{
+		html="<DIV style='position:absolute;top:0;left:0;width:0;height:0;'></DIV>";
+	}
+	
+
+	html +="<DIV style='position:absolute;top:" + top + ";left:"+ left + ";width:"+ width + ";height:"+ height +";border:"+borderWidth+" "+borderStyle+" "+borderColor+";background-color:"+backgroundColor+";z-index:0;clip:rect(0,"+width+","+ height +",0)'>";
+	html +="<img onMouseUp='" + id + ".ArrowSelected(this)' onMouseDown='" + id + ".ArrowClicked(this)' onMouseOver='" + id + ".OverArrow(this)' onMouseOut='" + id + ".OutArrow(this)' way='UP'   src='"+downArrowImg+"' style='position:absolute;top:0;left:0;cursor:hand;visibility:hidden;z-index:500'>";
+	html +="<img onMouseUp='" + id + ".ArrowSelected(this)' onMouseDown='" + id + ".ArrowClicked(this)' onMouseOver='" + id + ".OverArrow(this)' onMouseOut='" + id + ".OutArrow(this)' way='DOWN' src='"+upArrowImg+"'   style='position:absolute;top:0;left:0;cursor:hand;visibility:hidden;z-index:500'>";
+	html +="<DIV></DIV></DIV>";
+	element.innerHTML=html;
+
+	
+	upButton=element.children[1].children[0];
+	downButton=element.children[1].children[1];
+	rightMenu=element.children[1].children[2];			//右边菜单对象
+	
+
+	if (TreeLevel==3)
+	{
+		MenuItemsSelected(0);
+	}
+	else
+	{
+		createRightMenu(xmlObj);
+	}
+	
+}
+
+/* Liuxd 2006-3-2
+*创建右边菜单
+*
+*/
+function createRightMenu(xmlObj)
+{
+	var folderWidth=(width - borderWidth * 2);				//图标集合图层宽度
+	var folderTop=0;										//图标集合图层顶点
+	var html="";
+	tabCount=0;
+		
+	var n=xmlObj.childNodes.length;
+	for (var i=n-1;i>-1;i--)
+	{
+		var subObj=xmlObj.childNodes(i);
+		if(i==0)
+		{
+			html += "<INPUT position='UP'  id='OB_Button" + i + "' onClick='" + id + ".ClickButton(" + i + ")'  TYPE='button' value='"+ subObj.getAttribute("Title")+"' style='background-image: url("+buttonBGImg+");position:absolute;top:0;left:0;width:"+buttonWidth+";height:"+buttonHeight+";font-family:"+buttonFontFamily+";font-size:"+buttonFontSize+"pt;cursor:hand;color:"+buttonFontColor+";z-index:100;border:0px #ffffff solid'>";	
+			folderTop=buttonHeight;
+			secondTitle=subObj.getAttribute("Title");
+		}	
+		else
+		{
+			var buttonTop=(height-(n-i)*buttonHeight-borderWidth*2);
+			html += "<INPUT position='DOWN' id='OB_Button" + i+ "'  onClick='" + id + ".ClickButton(" + i + ")'  TYPE='button' value='"+ subObj.getAttribute("Title")+"' style='background-image: url("+buttonBGImg+");position:absolute;top:"+ buttonTop +";left:0;width:"+buttonWidth+";height:"+buttonHeight+";font-family:"+buttonFontFamily+";font-size:"+buttonFontSize+"pt;cursor:hand;color:"+buttonFontColor+";z-index:100;border:0px #ffffff solid'>";
+			folderTop=buttonTop+buttonHeight;			
+		}		
+		
+		var items=subObj.childNodes.length;
+		var folderHeight=(tabMargin*2+items*(iconsWidth+labelFontSize+(labelMargin<0?0:labelMargin))+(items-1)*itemsSpacing);			
+
+		html += "<DIV align=center id='OB_Folder"+i+"' style='position:absolute;left:0;top:"+folderTop+";width:"+folderWidth+";height:"+ folderHeight +";z-index:" + i + ";clip:rect(0 0 0 0);'>";
+		for (var j=0;j<subObj.childNodes.length;j++)
+		{
+			var iconsLeft=(Math.ceil((width-borderWidth*2-iconsWidth)/2));
+			var iconsTop=tabMargin+j*(itemsSpacing+labelFontSize+iconsWidth);
+			var textTop=labelMargin+iconsWidth+tabMargin+j * (itemsSpacing+labelFontSize+iconsWidth);
+			html += "<div  onMouseDown='" + id + ".ItemClicked(this)' onMouseUp='" + id + ".ItemSelected(this)' onMouseOver='" + id + ".OverItems(this)' onMouseOut='" + id + ".OutItems(this)' style='position:absolute;left:"+ iconsLeft +";top:"+ iconsTop +";cursor:hand;width:"+iconsWidth+";height:"+iconsHeight+"' Href='" + subObj.childNodes(j).getAttribute("Href") + "' message='" + subObj.childNodes(j).getAttribute("Title") + "' Target='" + subObj.childNodes(j).getAttribute("Target") + "'>";
+			html += "<img src='" + subObj.childNodes(j).getAttribute("Img") + "' width=" + iconsWidth + " height=" + iconsHeight + ">";
+			html += "</div>";
+			html += "<div align='center' style='position:absolute;left:0;top:" + textTop  +";'>";
+			html += "<table width=100%><tr><td align=center><table width=100%><tr><td align=center style='font-family:"+labelFontFamily+";font-size:"+labelFontSize+"pt;color:"+labelFontColor+"'>" + subObj.childNodes(j).getAttribute("Title") +"</td></tr></table></td></tr></table>";
+			html += "</div>";
+		}			
+		html +="</DIV>";	
+		tabCount++;
+	}
+	rightMenu.innerHTML=html;
+
+	visibleHeight=height-2*borderWidth-n*buttonHeight;			//有效高度计算
+	visibleWidth=width;											//有效宽度
+
+	currTab=0;
+	ClipFolder(currTab,0,visibleWidth,visibleHeight,0);		
+	SetArrows();
+	
+}
+
+
+
+/* Liuxd 2006-2-23
+*  设置图标层显示范围
+*
+*/
+function ClipFolder(n,top,right,bottom,left)
+{
+	element.document.all("OB_Folder"+n).style.clip='rect('+top+' '+right+' '+bottom+' '+left+')';	
+}
+
+/* Liuxd 2006-2-23
+*  标签按钮点击响应事件
+*
+*/
+function ClickButton(n)
+{
+	if(sliding) return;
+	if(n==currTab) return;
+	var obj=event.srcElement;
+
+	secondTitle=obj.value;
+
+	sliding=true;	
+	slideStep=1;
+	countStep=0;
+	slideCount=visibleHeight;
+	HideArrows();
+	SlideFolders(n,obj.position=="DOWN");
+
+	return;	
+}
+
+/* Liuxd 2006-2-23
+*  滚动图标层
+*
+*/
+function SlideFolders(n,down)
+{
+	var step=0;
+	if(down)
+	{
+		slideCount-=Math.floor(slideStep);
+		if(slideCount<0) slideStep +=slideCount;			
+		step=Math.floor(slideStep);
+		
+		for(var i=1;i<=n;i++)
+		if(element.document.all["OB_Button"+i].position=="DOWN")
+		{
+			element.document.all["OB_Button"+i].style.pixelTop-=step;
+			element.document.all["OB_Folder"+i].style.pixelTop-=step;
+		}		
+
+	    filter = /rect\((\d*)px (\d*)px (\d*)px (\d*)px\)/;			
+		var clipString=element.document.all["OB_Folder"+n].style.clip;
+		var clip=clipString.match(filter);
+		ClipFolder(n,parseInt(clip[1]),visibleWidth,(parseInt(clip[3])+step),0);
+		var clipString=element.document.all["OB_Folder" + currTab].style.clip;
+		var clip=clipString.match(filter);
+		ClipFolder(currTab,parseInt(clip[1]),visibleWidth,(parseInt(clip[3])-step),0);
+
+		slideStep*=slideSpeed;	
+		
+		if(slideCount>0) window.setTimeout(id + ".SlideFolders("+n+",true);",20);
+		else
+		{			
+			for(var k=1;k<=n;k++) element.document.all["OB_Button"+k].position="UP";
+			currTab=n;	
+			SetArrows();
+			sliding=false;
+		}	
+	}
+	else
+	{
+		slideCount-=Math.floor(slideStep);
+		if(slideCount<0) slideStep +=slideCount;			
+		step=Math.floor(slideStep);
+		
+		for(var i=parseInt(n)+1;i<tabCount;i++)
+		{
+			
+			if(element.document.all["OB_Button"+i].position=="UP")
+			{
+				element.document.all["OB_Button"+i].style.pixelTop+=step;
+				element.document.all["OB_Folder"+i].style.pixelTop+=step;				
+			}				
+		}
+
+	    filter = /rect\((\d*)px (\d*)px (\d*)px (\d*)px\)/;		
+		var clipString=element.document.all["OB_Folder"+n].style.clip;
+		var clip=clipString.match(filter);
+		ClipFolder(n,parseInt(clip[1]),visibleWidth,(parseInt(clip[3])+step),0);
+		var clipString=element.document.all["OB_Folder" + currTab].style.clip;
+		var clip=clipString.match(filter);
+		ClipFolder(currTab,parseInt(clip[1]),visibleWidth,(parseInt(clip[3])-step),0);
+
+		slideStep*=slideSpeed;	
+		
+		if(slideCount>0) window.setTimeout(id + ".SlideFolders("+n+",false);",20);
+		else
+		{				
+			for(var k=parseInt(n)+1;k<tabCount;k++)
+			{
+				
+				element.document.all["OB_Button"+k].position="DOWN";
+			}			
+			currTab=n;	
+			SetArrows();
+			sliding=false;
+		}
+	}
+	
+}
+
+/* Liuxd 2006-2-23
+*  设置滚动图标状态
+*
+*/
+function SetArrows()
+{
+	var currButton=element.document.all["OB_Button"+currTab];
+	upButton.style.pixelTop=currButton.style.pixelTop+currButton.style.pixelHeight+visibleHeight-downButton.height-5;
+	upButton.style.pixelLeft=width-upButton.width-borderWidth-10;
+	downButton.style.pixelTop=currButton.style.pixelTop+currButton.style.pixelHeight+5;
+	downButton.style.pixelLeft=width-downButton.width-borderWidth-10;
+
+	var folder=element.document.all["OB_Folder"+currTab].style;
+	var startTop=currButton.style.pixelTop+currButton.style.pixelHeight;	
+	
+	if(folder.pixelTop<startTop)
+		downButton.style.visibility="visible";
+	else		
+		downButton.style.visibility="hidden";
+
+	if(folder.pixelHeight-(startTop-folder.pixelTop)>visibleHeight)
+		upButton.style.visibility="visible";
+	else		
+		upButton.style.visibility="hidden";	
+}
+
+/* Liuxd 2006-2-23
+*  响应滚动图标点击事件
+*
+*/
+function ArrowClicked(arrow)
+{	
+	if(sliding) return;
+	arrow.style.border="1 inset #ffffff";
+}
+
+/* Liuxd 2006-2-23
+*  响应滚动图标点击后事件
+*
+*/
+function ArrowSelected(arrow)
+{
+	if(sliding) return;
+	arrow.style.border="0 none black";	
+	sliding=true;
+	slideCount=Math.floor(slideArrowValue/arrowSlideSpeed);	
+	arrow.way=="UP" ? SlideItems(-arrowSlideSpeed) : SlideItems(arrowSlideSpeed);	
+}
+
+
+
+
+/* Liuxd 2006-2-23
+*  滚动图标
+*
+*/
+function SlideItems(value)
+{
+	var currFolder=element.document.all["OB_Folder"+currTab];
+	currFolder.style.pixelTop+=value;
+    filter = /rect\((\d*)px (\d*)px (\d*)px (\d*)px\)/;
+
+	var clipString=currFolder.style.clip;
+	var clip=clipString.match(filter);
+	this.ClipFolder(currTab,(parseInt(clip[1])-value),parseInt(clip[2]),(parseInt(clip[3])-value),parseInt(clip[4]));
+	this.slideCount--;
+	if(this.slideCount>0) setTimeout(id + ".SlideItems("+value+")",20);
+
+	else
+	{
+		if(Math.abs(value)*this.arrowSlideSpeed!=this.slideArrowValue)		
+		{
+			currFolder.style.pixelTop+=(value/Math.abs(value)*(slideArrowValue%arrowSlideSpeed));
+		    filter = /rect\((\d*)px (\d*)px (\d*)px (\d*)px\)/;
+			var clipString=currFolder.style.clip;
+			var clip=clipString.match(filter);
+		    ClipFolder(currTab,(parseInt(clip[1])-(value/Math.abs(value)*(slideArrowValue%arrowSlideSpeed))),parseInt(clip[2]),(parseInt(clip[3])-(value/Math.abs(value)*(slideArrowValue%arrowSlideSpeed))),parseInt(clip[4]));
+		}		    
+		SetArrows();
+		sliding=false;
+	}
+}
+
+/* Liuxd 2006-2-23
+*  隐藏图标
+*
+*/
+function HideArrows()
+{
+	downButton.style.visibility="hidden";
+	upButton.style.visibility="hidden";
+}
+
+
+
+
+/* Liuxd 2006-2-23
+*  响应滚动图标鼠标获得焦点击事件
+*
+*/
+function OverArrow(arrow)
+{
+	if(sliding) return;		
+	arrow.style.border="1 outset #ffffff";
+}
+
+/* Liuxd 2006-2-23
+*  响应滚动图标鼠标失去焦点击事件
+*
+*/
+function OutArrow(arrow)
+{
+	if(sliding) return;		
+	arrow.style.border="0 none black";
+}
+
+/* Liuxd 2006-2-23
+*  响应图标点击事件
+*
+*/
+function ItemClicked(item)
+{
+	if(sliding) return;		
+	item.style.border="2 inset #ffffff";
+}
+
+
+/* Liuxd 2006-2-23
+*  响应图标鼠标获得焦点击事件
+*
+*/
+function OverItems(item)
+{
+	if(sliding) return;	
+	item.style.border="1 outset #ffffff";
+}
+
+/* Liuxd 2006-2-23
+*  响应图标鼠标失去焦点击事件
+*
+*/
+function OutItems(item)
+{
+	if(sliding) return;
+	item.style.border="0 none black";
+}
+
+/* Liuxd 2006-2-23
+*  响应图标点击后事件
+*
+*/
+function ItemSelected(item)
+{
+	if(sliding) return;
+	item.style.border="1 outset #ffffff";	
+	try
+	{
+		thirdTitle=item.message;
+		if (firstTitle=="")
+		{
+			parent.frames["topFrame"].setPath(secondTitle + "-->" + thirdTitle);
+		}
+		else
+		{
+			parent.frames["topFrame"].setPath(firstTitle + "->" + secondTitle + "-->" + thirdTitle);
+		}
+		parent.frames[item.Target].location=item.Href;
+	}
+	catch (exception)
+	{
+	}	
+}
+
+
+/* Liuxd 2006-3-2
+*左边菜单点击事件
+*
+*/
+function MenuItemsSelected(n)
+{
+	
+	for(var k=0;k<leftMenuCount;k++)
+	{
+		element.document.all["OB_Menu"+ k].style.display="";
+		element.document.all["OB_MenuT"+ k].style.display="none";
+	}		
+
+	element.document.all["OB_Menu"+ n].style.display="none";
+	element.document.all["OB_MenuT"+ n].style.display="";
+
+	firstTitle=element.document.all["OB_Menu"+ n].message;
+	createRightMenu(xmlObj.childNodes(n));
+}
+
+/* Liuxd 2006-3-2
+*改变文字(每格一字后面加上<br>)
+*
+*/
+function changeText(str)
+{
+	var string="";
+	for(var k=0;k<str.length;k++)
+	{
+		string+=str.substr(k,1) + "<br>";
+	}	
+	return string;
+}
+
+</SCRIPT>
+</PUBLIC:COMPONENT>

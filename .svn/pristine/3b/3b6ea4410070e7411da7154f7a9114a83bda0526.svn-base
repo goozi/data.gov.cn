@@ -1,0 +1,78 @@
+<%@ page contentType="text/html; charset=GBK" %>
+<div class="navbar-wrapper">
+      <div class="container">
+
+        <div class="navbar navbar-inverse navbar-static-top navbar-mnav" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-interval="0"  data-target=".navbar-collapse">
+                <span class="sr-only">导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <div class="navbar-brand"></div>
+            <div class="assist">
+                <div class="assist-info" style="display:none;">
+                    <i class="fa fa-user"></i> <a href="#" class="user" title="当前用户">辛鹏</a>  <i class="fa fa-gear"></i> 设置
+                </div>
+                <div class="btn-group assist-btn" role="group" aria-label="...">
+                  <button type="button" class="btn btn-default" onclick="location.href='login.jsps'">登录</button>
+                  <button type="button" class="btn btn-default">注册</button>
+                </div>
+              </div>
+            </div>
+            <div class="navbar-collapse collapse" data-interval="100">
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="/index.jsps">首页</a></li>
+                <li><a href="/front/dataset.jsps">数据</a></li>
+                <li><a href="/front/app.jsps">应用</a></li>
+                <li class="dropdown">
+                  <a href="/front/developer.jsps" class="dropdown-toggle" data-toggle="dropdown">开发者 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/front/apiList.jsps">API列表</a></li>
+                    <li><a href="/front/developerList.jsps">开发者列表</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/front/forum.jsps">讨论组</a></li>
+                  </ul>
+                </li>
+                <li><a href="/front/interact.jsps">互动交流</a></li>
+              </ul>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+   
+    <div class="search-bar">
+        <div class="container">
+            <input type="text" class="form-control" onfocus="$('.search-assist').show();" onblur="$('.search-assist').hide();" placeholder="请输入您要查询的关键字"/>
+            <button class="btn btn-default btn-search-data" type="button"><i class="fa fa-database"></i> 搜数据</button>
+            <button class="btn btn-default btn-search-all" type="button"><i class="fa fa-cubes"></i> 搜所有</button>
+            <div class="search-assist">
+                <dl  class="dl-horizontal">
+                  <dt>热门搜索：</dt>
+                  <dd>
+                      <span class="label label-info">商品房</span>
+                      <span class="label label-info">税收</span>
+                      <span class="label label-info">CPI</span>
+                      <span class="label label-info">停车场位置</span>
+                      <span class="label label-info">交通事故高发路段</span>
+                      <span class="label label-info">菜品价格指数</span>
+                      <span class="label label-info">城市地下管道数据</span>
+                  </dd>
+                  <dt>最近搜索：</dt>
+                  <dd>
+                      <span class="label label-info">拥堵路段</span>
+                      <span class="label label-info">房地产</span>
+                      <span class="label label-info">反腐成果</span>
+                      <span class="label label-info">习近平</span>
+                      <span class="label label-info">亲民</span>
+                      <span class="label label-info">汽车垄断</span>
+                      <span class="label label-info">工作好无聊</span>
+                  </dd>
+                </dl>
+            </div>
+        </div>
+    </div>

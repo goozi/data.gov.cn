@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.dhccity.data.entity">
+	<class name="DataGroup" table="DATA_GROUP">
+		<id name="id"  column="ID">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property name="name"  column="NAME"/>
+		<property name="title"  column="TITLE"/>
+		<property name="description"  column="DESCRIPTION"/>
+		<property name="createTime"  column="CREATE_TIME" type="timestamp"/>
+		<property name="state"  column="STATE"/>
+		<property name="creator"  column="CREATOR"/>
+		<property name="approvalStatus"  column="APPROVAL_STATUS"/>
+		<property name="logo"  column="LOGO"/>
+		<property name="type"  column="TYPE"/>
+		<property name="datasetNum"  column="DATASET_NUM"/>
+	</class>
+</hibernate-mapping>

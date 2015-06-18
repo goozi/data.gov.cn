@@ -1,0 +1,15 @@
+<%@ page contentType="text/html; charset=GBK" %>
+<%@ include file="include.jsp" %>
+<html xmlns:kingtop>
+<head>
+<META NAME="Robots" CONTENT="noindex">
+  <meta content="text/html;charset=gb2312" http-equiv="Content-Type">
+  <title>Deeptree</title>
+<STYLE>
+	 kingtop\:outlook {behavior: url(htc/outlook.htc);}
+</STYLE>
+</head>
+<body  >
+<kingtop:outlook  id="Outlook" top="0" left="0" height="element.clientHeight" width="118" NodeXmlSrc="base/menuAction.do?action=createMenu" FilesDir="htc/" TreeLevel=<%=Config.getAttributeValue("menu","treelevel")%>></kingtop:outlook>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<%@ page language="java" pageEncoding="utf-8" %>
+<%@ include file="front/include.jsps" %>
+<%
+    User user = (User)session.getAttribute("user");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="gbk">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title><%=Config.SystemName%>
+    </title>
+
+    <script type="text/javascript" src="/js/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+    <%--<script type="text/javascript" src="/js/jquery-ui.min.js"></script>--%>
+    <script src="/js/aYin/aYin.js"></script>
+    <script src="/js/bootstrap/js/bootstrap.js"></script>
+    <script src="/js/jquery.captcha.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/js/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="/style/carousel.css">
+    <link rel="stylesheet" type="text/css" href="/js/aYin/aYin.css">
+    <link rel="stylesheet" type="text/css" href="/style/captcha.css">
+    <%@ include file="easyui_include.jsp" %>
+</head>
+<body>
+<div class="navbar-wrapper">
+    <div class="container">
+        <div class="navbar navbar-inverse navbar-static-top navbar-mnav" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-interval="0"
+                            data-target=".navbar-collapse">
+                        <span class="sr-only">导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="navbar-brand"></div>
+                    <div class="assist">
+                        <div class="assist-info" style="<%=user==null?"display:none;":""%>">
+                            <i class="fa fa-user"></i> <a href="#" class="user" title="当前用户"><%=user==null?"":user.getName()%></a> <i
+                                class="fa fa-gear"></i><a href="/main.jsp"> 管理</a>
+                        </div>
+                        <div class="btn-group assist-btn" role="group" aria-label="..." style="<%=user!=null?"display:none;":""%>">
+                            <button type="button" class="btn btn-default" onclick="location.href='/login.jsps'">登录
+                            </button>
+                            <button type="button" class="btn btn-default" onclick="$('#register-modal').modal('show')">
+                                注册
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="navbar-collapse collapse" data-interval="100">
+                    <ul class="nav navbar-nav">
+                        <li id="nav-home" class="active"><a href="/front/home.jsps" target="main">首页</a></li>
+                        <li id="nav-data"><a href="/front/dataset.jsps" target="main">数据</a></li>
+                        <li id="nav-app"><a href="/front/app_main.jsps" target="main">应用</a></li>
+                        <li id="nav-app"><a href="/front/api_main.jsps" target="main">API</a></li>
+                        <%--<li id="nav-dev" class="dropdown">--%>
+                            <%--<a href="/front/developer.jsps" class="dropdown-toggle" data-toggle="dropdown"--%>
+                               <%--target="main">开发者 <span--%>
+                                    <%--class="caret"></span></a>--%>
+                            <%--<ul class="dropdown-menu" role="menu">--%>
+                                <%--<li id="nav-api"><a href="/front/apiList.jsps" target="main">API列表</a></li>--%>
+                                <%--<li id="nav-developer"><a href="/front/developerList.jsps" target="main">开发者列表</a></li>--%>
+                                <%--<li class="divider"></li>--%>
+                                <%--<li id="nav-forum"><a href="/front/forum.jsps" target="main">讨论组</a></li>--%>
+                            <%--</ul>--%>
+                        <%--</li>--%>
+                        <li id="nav-interact"><a href="/front/interact.jsps" target="main">互动交流</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="search-bar">
+    <div class="container">
+        <input id="globalSearchText" type="text" class="form-control"
+               placeholder="请输入您要查询的关键字"/>
+        <button class="btn btn-default btn-search-data" type="button"><i class="fa fa-database"></i> 搜数据</button>
+        <button class="btn btn-default btn-search-all" type="button"><i class="fa fa-cubes"></i> 搜所有</button>
+        <div class="search-assist">
+            <dl class="dl-horizontal">
+                <dt>热门搜索：</dt>
+                <dd id="hotSearch">
+                </dd>
+                <dt>最近搜索：</dt>
+                <dd id="freshSearch">
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<iframe id="main" name="main" src="front/home.jsps" frameborder="0" width="100%" onload="iFrameHeight()"></iframe>
+
+<footer>
+    <div class="container">
+        <span class="logo"></span>
+        <span class="divider-vertical"></span>
+        <ul class="links">
+            <li>联系我们</li>
+            <li>FAQ</li>
+            <li>网站地图</li>
+            <li>政 策</li>
+            <li>API</li>
+            <li>统计分析</li>
+            <li>关于我们</li>
+        </ul>
+        <span class="copyright">版权所有 ?0?82015 Data.gov  |  京公网安备：110105006306   </span>
+        <ul class="contact">
+            <li>
+                <i class="fa fa-weibo"></i>
+
+                <p>新浪微博</p>
+            </li>
+            <li>
+                <i class="fa fa-weixin"></i>
+
+                <p>微信</p>
+            </li>
+        </ul>
+        <!--
+        <p  class="pull-right"><a href="#">Back to top</a></p>
+        <p>&copy; 2014 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+        -->
+    </div>
+
+</footer>
+
+</body>
+<script>
+    function iFrameHeight() {
+        var ifm = document.getElementById("main");
+        var subWeb = document.frames ? document.frames["main"].document : ifm.contentDocument;
+        if (ifm != null && subWeb != null) {
+            ifm.height = subWeb.body.scrollHeight;
+        }
+    }
+    $('.btn-search-data').on('click', function () {
+        var gst = $('#globalSearchText').val();
+        $.get('/searchAction.dox?action=addData&keyword=' + gst + '&type=data', function (data) {
+            if (data == 'success') {
+                $('#nav-data').addClass('active');
+                $('#nav-data').siblings('.active').removeClass('active');
+                $('#main').attr("src", 'front/dataset.jsps?searchText=' + gst);
+            }
+        });
+    });
+    $('.btn-search-all').on('click', function () {
+        var gst = $('#globalSearchText').val();
+        $.get('/searchAction.dox?action=addData&keyword=' + gst + '&type=all', function (data) {
+            if (data == 'success') {
+                $('#nav-data').addClass('active');
+                $('#nav-data').siblings('.active').removeClass('active');
+                $('#main').attr("src", 'front/article_main.jsps?searchText=' + gst);
+            }
+        });
+    });
+    $('#globalSearchText').on('focus', function () {
+        $.get('/searchAction.dox?action=getAssistJson', function (data) {
+            var hotHtml = '', freshHtml = '';
+            $.each($.parseJSON(data).hot, function (i, val) {
+                if (val.type == 'data') {
+                    hotHtml += "<span class='label label-danger' onclick=\"$(\'#main\').attr(\'src\', \'front/dataset.jsps?searchText=" + val.keyword + "\');\">" + val.keyword + "</span> &nbsp;&nbsp;";
+                } else {
+                    hotHtml += "<span class='label label-warning' onclick='$(\'#main\').attr(\'src\', \'front/article_main.jsps?searchText=" + val.keyword + "\');\">" + val.keyword + "</span> &nbsp;&nbsp;";
+                }
+            });
+            $('#hotSearch').html(hotHtml);
+
+            $.each($.parseJSON(data).fresh, function (i, val) {
+                if (val.type == 'data') {
+                    freshHtml += "<span class='label label-success' onclick=\"$(\'#main\').attr(\'src\', \'front/dataset.jsps?searchText=" + val.keyword + "\');\">" + val.keyword + "</span> &nbsp;&nbsp;";
+                } else {
+                    freshHtml += "<span class='label label-info' onclick='$(\'#main\').attr(\'src\', \'front/article_main.jsps?searchText=" + val.keyword + "\');\">" + val.keyword + "</span> &nbsp;&nbsp;";
+                }
+            });
+            $('#freshSearch').html(freshHtml);
+            $('.search-assist').show();
+        });
+    });
+    $('#globalSearchText').on('blur', function () {
+        $('.search-assist').hide('slow');
+    });
+    $('.navbar-nav li').on('click', function () {
+        $(this).addClass('active');
+        $(this).siblings('.active').removeClass('active');
+    });
+
+    $('#logout').on('click',function(){
+        location.href='loginAction.do?action=logout';
+    });
+</script>
+</html>

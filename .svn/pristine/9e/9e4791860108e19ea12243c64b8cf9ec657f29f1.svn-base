@@ -1,0 +1,116 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../include.jsp" %>
+<%@ page import="com.dhccity.app.entity.App" %>
+<%
+	int currPage=req.getInt("currPage")==0?1:req.getInt("currPage");
+	int pageSize=parameter.pageSize;
+	String pageUrl=req.getPageUrl();
+	String searchField=req.getString("searchField");
+	String searchValue=req.getString("searchValue");
+	App oApp=new App();
+	Iterator it=null;
+	if (req.getString("search").equals(""))
+		it=oApp.findPage(currPage,pageSize).iterator();
+	else
+		;//it=oApp.search(searchField,searchValue,currPage,pageSize).iterator();
+	Page oPage=oApp.getPage();
+%>
+<html xmlns:kingtop>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+	<LINK  href="../style/default.css" rel=stylesheet>
+	<link rel="stylesheet" href="../htc/default.jss" type="text/css">
+	<title><%=Config.SystemName%></title>
+</head>
+<body>
+	<table width="95%" align="center" cellpadding="0" cellspacing="0">
+		<tr>
+			<td height="10"></td>
+		</tr>
+		<tr>
+			<td height="30">
+				<input type="button" name="add" value="新建" class="btn"  onClick="location.href='app_add.jsp';" >
+				<input type="button" name="edit" value="编辑" class="btn"  onClick="document.body.editData(document.all('idArray'),'app_edit.jsp?id=')"  >
+				<input type="button" name="delete" value="删除" class="btn"  onClick="doDelete();">
+				<input type="button" name="selectAll" value="全选" class="btn" onClick="document.body.selectAll(document.all('idArray'))">
+				<input type="button" name="inverse" value="反选" class="btn" onClick="document.body.inverse(document.all('idArray'))" > 
+			</td>
+		</tr>
+	</table>
+	<table class="query_table" cellspacing="0" cellpadding="0" width="95%" align="center"  border="0">
+	<form name="searchForm" method="post" action="user_list.jsp">
+		<tr>
+			<td height="34">
+				<select name="searchField" SelectValue="<%=searchField%>">
+					<option value="name">英文名</option>
+					<option value="cnName">中文名</option>
+					<option value="developer">开发人</option>
+				</select>：
+				<input size="20" name="searchValue" value="<%=searchValue%>">
+			</td>
+			<td width="6%" >
+				<input type=button class="btn"  onClick="doSearch()"  border="0" name="search" value="搜索" >
+			</td>
+		</tr>
+	</form>
+	</table>
+	<br>
+	<table class="list"  style="behavior:url(../htc/table.htc)" FixRow="<%=pageSize%>" cellspacing=1 cellpadding=0 width="95%" align=center  border=0 >
+		<tr class="title">
+			<td>选择</td>
+			<td DataType="NUMBER">ID</td>
+			<td >英文名</td>
+			<td >中文名</td>
+			<td >描述</td>
+			<td >URL</td>
+			<td >开发人</td>
+			<td DataType="NUMBER">提交人ID</td>
+			<td DataType="NUMBER">应用图标</td>
+			<td DataType="NUMBER">应用截图</td>
+			<td DataType="NUMBER">应用收费类型</td>
+			<td DataType="NUMBER">类别</td>
+		</tr>
+<%
+	while (it.hasNext())
+	{
+		App app = (App) it.next();
+%>
+		<tr>
+			<td ><input name="idArray" type="checkbox" value="<%=app.getId()%>"></td>
+			<td><a href="app_view.jsp?id=<%=app.getId()%>"><%=app.getId()%></a></td>
+			<td><%=app.getName()%></td>
+			<td><%=app.getCnName()%></td>
+			<td><%=app.getDesc()%></td>
+			<td><%=app.getUrl()%></td>
+			<td><%=app.getDeveloper()%></td>
+			<td><%=app.getSubmitterId()%></td>
+			<td><%=app.getAppThumbnail()%></td>
+			<td><%=app.getAppPic()%></td>
+			<td><%=app.getAppCharge()%></td>
+			<td><%=app.getCategory()%></td>
+		</tr>
+<%
+	}
+%>
+	</table>
+	<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" >
+		<tr>
+			<td width="50%" height="33" align="left"><%=oPage.getInfo()%></td>
+			<td width="50%" align="right"><%=oPage.getButton(pageUrl)%></td>
+		</tr>
+	</table>
+</body>
+</html>
+<script language="javascript">
+//删除--恢复选中记录
+function doDelete()
+{
+	if (document.body.setupData(document.all('idArray'),'appAction.do?action=deleteData'))
+	document.location.reload();
+}
+//响应搜索按钮
+function doSearch()
+{
+	document.all("searchForm").doSend();
+}
+</script>

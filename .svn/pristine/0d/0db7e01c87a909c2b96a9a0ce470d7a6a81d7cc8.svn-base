@@ -1,0 +1,241 @@
+package com.dhccity.base.entity;
+
+import java.util.*;
+
+import org.light.*;
+
+/**
+ * <p>Title: BASE_MENU 表对应类</p>
+ * <p>Description:BASE_MENU</p>
+ * <p>Company: dhccity</p>
+ * <p>CreateDate: 2006-02-21 16:42</p>
+ * @author liuxd
+ * @version 1.0
+ */
+
+public class BaseMenu extends TreeAdo implements Tree
+{
+	private long id; //ID
+	private String name; //名称
+	private int state; //状态：0表示无效、1表示有效
+	private int sequ; //顺序种子
+	private long parentId; //父ID号
+	private String value; //值[链接地址]
+	private String target; //目标
+	private long securityId; //安全ID
+	private String explain; //说明
+	private String meno; //备注
+
+	public BaseMenu()
+	{
+	}
+
+	public BaseMenu(long id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * 对应字段：[ID]  类型：NUMBER(22)
+	 */
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * 对应字段：[ID]  类型：NUMBER(22)
+	 */
+	public long getId()
+	{
+		return this.id;
+	}
+
+	/**
+	 * 对应字段：[名称]  类型：VARCHAR2(200)
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	/**
+	 * 对应字段：[名称]  类型：VARCHAR2(200)
+	 */
+	public String getName()
+	{
+		return this.name == null ? "" : this.name;
+	}
+
+	/**
+	 * 对应字段：[状态：0表示无效、1表示有效]  类型：NUMBER(1)
+	 */
+	public void setState(int state)
+	{
+		this.state = state;
+	}
+
+	/**
+	 * 对应字段：[状态：0表示无效、1表示有效]  类型：NUMBER(1)
+	 */
+	public int getState()
+	{
+		return this.state;
+	}
+
+	/**
+	 * 对应字段：[顺序种子]  类型：NUMBER(4)
+	 */
+	public void setSequ(int sequ)
+	{
+		this.sequ = sequ;
+	}
+
+	/**
+	 * 对应字段：[顺序种子]  类型：NUMBER(4)
+	 */
+	public int getSequ()
+	{
+		return this.sequ;
+	}
+
+	/**
+	 * 对应字段：[父ID号]  类型：NUMBER(12)
+	 */
+	public void setParentId(long parentId)
+	{
+		this.parentId = parentId;
+	}
+
+	/**
+	 * 对应字段：[父ID号]  类型：NUMBER(12)
+	 */
+	public long getParentId()
+	{
+		return this.parentId;
+	}
+
+	/**
+	 * 对应字段：[值[链接地址]]  类型：VARCHAR2(100)
+	 */
+	public void setValue(String value)
+	{
+		this.value = value;
+	}
+
+	/**
+	 * 对应字段：[值[链接地址]]  类型：VARCHAR2(100)
+	 */
+	public String getValue()
+	{
+		return this.value == null ? "" : this.value;
+	}
+
+	/**
+	 * 对应字段：[目标]  类型：VARCHAR2(100)
+	 */
+	public void setTarget(String target)
+	{
+		this.target = target;
+	}
+
+	/**
+	 * 对应字段：[目标]  类型：VARCHAR2(100)
+	 */
+	public String getTarget()
+	{
+		return this.target == null ? "" : this.target;
+	}
+
+	/**
+	 * 对应字段：[安全ID]  类型：NUMBER(12)
+	 */
+	public void setSecurityId(long securityId)
+	{
+		this.securityId = securityId;
+	}
+
+	/**
+	 * 对应字段：[安全ID]  类型：NUMBER(12)
+	 */
+	public long getSecurityId()
+	{
+		return this.securityId;
+	}
+
+	/**
+	 * 对应字段：[说明]  类型：VARCHAR2(1000)
+	 */
+	public void setExplain(String explain)
+	{
+		this.explain = explain;
+	}
+
+	/**
+	 * 对应字段：[说明]  类型：VARCHAR2(1000)
+	 */
+	public String getExplain()
+	{
+		return this.explain == null ? "" : this.explain;
+	}
+
+	/**
+	 * 对应字段：[备注]  类型：VARCHAR2(1000)
+	 */
+	public void setMeno(String meno)
+	{
+		this.meno = meno;
+	}
+
+	/**
+	 * 对应字段：[备注]  类型：VARCHAR2(1000)
+	 */
+	public String getMeno()
+	{
+		return this.meno == null ? "" : this.meno;
+	}
+
+	//===============================以下为自编辑代码===================================
+
+	/**
+	 * 通过递归方式--加载子节点，实现TreeAdo虚函数
+	 * @param parentId long		父ID
+	 * @param state int			-1为所有、0为无效的、1为有效的
+	 * @param level int			级数
+	 */
+	protected void loadChildNode(long parentId, int state, int level)
+	{
+		String hql = "from BaseMenu o where o.parentId=" + parentId;
+		if (state == 0 || state == 1)
+		{
+			hql += " and o.state=" + state;
+		}
+		hql += " order by o.sequ desc";
+		List list = this.findAll(hql);
+		Iterator it = list.iterator();
+		if (list.size() > 0 && currIndex != -1)
+		{
+			( (BaseMenu) treeVector.get(currIndex)).isLeaf = false;
+		}
+		while (it.hasNext())
+		{
+			BaseMenu baseMenu = (BaseMenu) it.next();
+			baseMenu.setLevel(level);
+			baseMenu.isLeaf = true;
+			treeVector.add(baseMenu);
+			currIndex++;
+			loadChildNode(baseMenu.getId(), state, level + 1); //递归
+		}
+	}
+
+	/**
+	 * 获取权限对象
+	 * @return String
+	 */
+	public String getSecurityName()
+	{
+		BaseSecurity baseSecurity = (BaseSecurity)new BaseSecurity().findById(this.securityId);
+		return baseSecurity == null ? "" : baseSecurity.getName();
+	}
+
+}

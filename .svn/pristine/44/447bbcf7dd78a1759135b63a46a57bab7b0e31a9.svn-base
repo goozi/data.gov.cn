@@ -1,0 +1,61 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../include.jsp" %>
+<%@ page import="com.dhccity.app.entity.App" %>
+<%
+%>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+	<LINK  href="../style/default.css" rel=stylesheet>
+	<link rel="stylesheet" href="../htc/default.jss" type="text/css">
+	<title><%=Config.SystemName%></title>
+</head>
+<body>
+	<form name="dataForm" method="post" action="appAction.do?action=addData" Check="true" Change="true">
+	<table class="edit"  cellspacing=1 cellpadding=3 width="95%" align=center border=0>
+		<tr class="title">
+			<td colspan="4"><b>应用新增</b></td>
+		</tr>
+		<tr>
+			<td width="15%"  align="right">英文名</td>
+			<td><input name="name" type="text" size="30" validType="maxLength[160]" class="easyui-validatebox"></td>
+			<td width="15%"  align="right">中文名</td>
+			<td><input name="cnName" type="text" size="30" validType="maxLength[160]" class="easyui-validatebox"></td>
+		</tr>
+		<tr>
+			<td width="15%"  align="right">描述</td>
+			<td><input name="desc" type="text" size="30" validType="maxLength[800]" class="easyui-validatebox"></td>
+			<td width="15%"  align="right">URL</td>
+			<td><input name="url" type="text" size="30" validType="maxLength[160]" class="easyui-validatebox"></td>
+		</tr>
+		<tr>
+			<td width="15%"  align="right">开发人</td>
+			<td><input name="developer" type="text" size="30" validType="maxLength[160]" class="easyui-validatebox"></td>
+			<td width="15%"  align="right">提交人ID</td>
+			<td><input name="submitterId" type="text" size="30" DataType="int" validType="maxLength[18]" class="easyui-validatebox"></td>
+		</tr>
+		<tr>
+			<td width="15%"  align="right">应用图标</td>
+			<td><input name="appThumbnail" type="text" size="30" DataType="int" validType="maxLength[18]" class="easyui-validatebox"></td>
+			<td width="15%"  align="right">应用截图</td>
+			<td><input name="appPic" type="text" size="30" DataType="int" validType="maxLength[18]" class="easyui-validatebox"></td>
+		</tr>
+		<tr>
+			<td width="15%"  align="right">应用收费类型</td>
+			<td><input name="appCharge" type="text" size="30" DataType="int" validType="maxLength[18]" class="easyui-validatebox"></td>
+			<td width="15%"  align="right">类别</td>
+			<td><input name="category" type="text" size="30" DataType="int" validType="maxLength[18]" class="easyui-validatebox"></td>
+		</tr>
+	</table>
+	<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
+		<tr>
+			<td height="29" align="center">
+				
+				<input type="submit" class="btn" border="0" name="sure" value="确定" >
+				<input type="button" class="btn" border="0" name="return" value="返回" onclick="history.back(-1);">
+			</td>
+		</tr>
+	</table>
+	</form>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_PARAMETER-->
+<!--<mapping resource="com/kingtop/xmsl/setup/hbm/BASE_PARAMETER.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseParameter" table="BASE_PARAMETER">
+		<id name="id"  column="ID">
+			<generator class="native">
+				<param name="sequence">BASE_PARAMETER_ID_SEQU</param>
+			</generator>
+		</id>
+		<property name="name"  column="NAME"/>
+		<property name="code"  column="CODE"/>
+		<property name="value"  column="VALUE"/>
+		<property name="unit"  column="UNIT"/>
+		<property name="type"  column="TYPE"/>
+		<property name="userNames"  column="USER_NAMES"/>
+		<property name="userIds"  column="USER_IDS"/>
+		<property name="explain"  column="EXPLAIN"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,197 @@
+<%@ page contentType="text/html; charset=utf-8"%>
+<%@ include file="../include.jsp"%>
+<%@ page import="com.dhccity.data.entity.Dataset"%>
+<%
+	
+%>
+<html xmlns:kingtop>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<LINK href="../style/default.css" rel=stylesheet>
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="../js/body.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="../js/easyui141/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"
+	href="../js/easyui141/themes/icon.css">
+<!--     <script type="text/javascript" src="../js/easyui141/jquery211.js"></script> -->
+<script type="text/javascript"
+	src="../js/easyui141/jquery.easyui.min.js"></script>
+<script type="text/javascript"
+	src="../js/easyui141/locale/easyui-lang-zh_CN.js"></script>
+<title><%=Config.SystemName%></title>
+</head>
+<body>
+	<form name="dataForm" method="post"
+		action="datasetAction.do?action=addData" Check="true" Change="true">
+		<table class="edit" cellspacing=1 cellpadding=3 width="95%"
+			align=center border=0>
+			<tr class="title">
+				<td colspan="4"><b>数据集新增</b></td>
+			</tr>
+			<tr>
+				<td width="15%" align="right">名称</td>
+				<td><input name="name" type="text" size="30" maxByte="160"></td>
+				<td width="15%" align="right">标题</td>
+				<td><input name="title" type="text" size="30" maxByte="3200"></td>
+			</tr>
+			<tr>
+				<td width="15%" align="right">描述</td>
+				<td><input name="desc" type="text" size="30" maxByte="800"></td>
+			</tr>
+			<tr>
+				<td width="15%" align="right">是否公开</td>
+				<td><input name="isPublic" type="text" size="30" DataType="int"
+					maxByte="1"></td>
+				<td width="15%" align="right">更新频率</td>
+				<td><input name="updateRate" type="text" size="30" maxByte="64"></td>
+			</tr>
+			<tr>
+				<td width="15%" align="right">下载数</td>
+				<td><input name="downloadNum" type="text" size="30"
+					DataType="int" maxByte="8"></td>
+				<td width="15%" align="right">查看数</td>
+				<td><input name="readNum" type="text" size="30" DataType="int"
+					maxByte="8"></td>
+			</tr>
+			<tr>
+				<td width="15%" align="right">所属机构</td>
+				<td><input name="orgId" type="text" size="30" DataType="int"
+					maxByte="18"></td>
+				<td width="15%" align="right">所属专题</td>
+				<td><input name="groupId" type="text" size="30" DataType="int"
+					maxByte="18"></td>
+			</tr>
+		</table>
+		<br>
+		<table id="dataResource"
+			style="MARGIN-RIGHT: auto; MARGIN-LEFT: auto;" width="95%">
+		</table>
+		<div id="toolbar">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"
+				onclick="addResource()">新增</a> <a href="#" class="easyui-linkbutton"
+				iconCls="icon-edit" plain="true" onclick="editResource()">编辑</a> <a
+				href="#" class="easyui-linkbutton" iconCls="icon-remove"
+				plain="true" onclick="deleteResource()">删除</a>
+		</div>
+		<div id="dialog"></div>
+		<table width="95%" border="0" align="center" cellpadding="0"
+			cellspacing="0">
+			<tr>
+				<td height="29" align="center"><input type="submit" class="btn"
+					border="0" name="sure" value="确定"> <input type="button"
+					class="btn" border="0" name="return" value="返回"
+					onclick="history.back(-1);"></td>
+			</tr>
+		</table>
+	</form>
+</body>
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+						$('#dataResource')
+								.datagrid(
+										{
+											title : '数据资源',
+											iconCls : 'icon-ok',
+											//width : 600,
+											height : 'auto',
+											pageSize : 10,//默认选择的分页是每页5行数据
+											pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合
+											nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取
+											striped : true,//设置为true将交替显示行背景。
+											collapsible : true,//显示可折叠按钮
+											toolbar : "#toolbar",//在添加 增添、删除、修改操作的按钮要用到这个
+											url : 'dataResourceAction.do?action=listData&src=add&datasetId=0',//url调用Action方法
+											loadMsg : '数据装载中......',
+											singleSelect : true,//为true时只能选择单行
+											fitColumns : true,//允许表格自动缩放，以适应父容器
+											columns : [ [ {
+												field : 'id',
+												title : 'ID',
+												width : 50
+											}, {
+												field : 'title',
+												title : '标题',
+												width : 300
+											}, {
+												field : 'fileType',
+												title : '文件类型',
+												width : 100
+											}, {
+												field : 'downloadNum',
+												title : '下载数',
+												width : 100,
+												align : 'right'
+											}, {
+												field : 'createDate',
+												title : '创建时间'
+											} ] ],
+											// 			sortName : 'createDate',//当数据表格初始化时以哪一列来排序
+											// 			sortOrder : 'desc',//定义排序顺序，可以是'asc'或者'desc'（正序或者倒序）。
+											remoteSort : false,
+											frozenColumns : [ [ {
+												field : 'id',
+												checkbox : true
+											} ] ],
+											pagination : true,//分页
+											rownumbers : true,//行数
+											onLoadSuccess : function(data) {
+												if (data.rows.length == 0) {
+													var body = $(this).data().datagrid.dc.body2;
+													body
+															.find('table tbody')
+															.append(
+																	'<tr><td width="'
+																			+ body
+																					.width()
+																			+ '" style="height: 25px; text-align: center;" colspan="7">没有数据</td></tr>');
+												}
+											}
+										});
+						//$('#dataResource').datagrid('appendRow',{});
+
+					});
+	function addResource() {
+		$('#dialog').dialog({
+			title : '新增数据资源',
+			width : 600,
+			height : 400,
+			closed : false,
+			cache : false,
+			href : 'dataResource_add.jsp',
+			modal : true
+		});
+	}
+	function editResource() {
+		var row = $('#dataResource').datagrid('getSelected');
+		if (row.length <= 0) {
+			$.messager.alert('警告', '请选择一行数据！', 'warning');
+			return;
+		}
+		$('#dialog').dialog({
+			title : '编辑数据资源',
+			width : 600,
+			height : 400,
+			closed : false,
+			cache : false,
+			href : 'dataResource_edit.jsp?id=' + row.id,
+			modal : true
+		});
+	}
+	function deleteResource() {
+		$.messager.confirm('确认', '确认删除?', 'warning', function(isOk) {
+			if (isOk) {
+				var row = $('#dataResource').datagrid('getSelected'); //获取选中行
+				if (row.length <= 0) {
+					$.messager.alert('警告', '请选择一行数据！', 'warning');
+					return;
+				}
+				var rowIndex = $('#dataResource').datagrid('getRowIndex', row);
+				$('#dataResource').datagrid('deleteRow', rowIndex);
+			}
+		});
+	}
+</script>
+</html>

@@ -1,0 +1,128 @@
+<%@ page language="java" pageEncoding="utf-8"%>
+<%@ include file="../include.jsp" %>
+<%@ page import="com.dhccity.base.entity.*" %>
+<%
+    int currPage = req.getInt("currPage")==0?1:req.getInt("currPage");
+    int pageSize=parameter.pageSize;    
+    String searchField=req.getString("searchField");
+	String searchValue=req.getString("searchValue");
+    Date startTime=req.getDate("startTime");
+    Date endTime=req.getDate("endTime");
+    String pageUrl=req.getPageUrl();
+	BaseLog oBaseLog=new BaseLog();
+    Iterator it;
+	if (req.getString("search").equals(""))
+	{
+        it=oBaseLog.findPage(currPage,pageSize).iterator();
+	}
+	else
+	{
+        it=oBaseLog.search(searchField,searchValue,startTime,endTime,currPage,pageSize).iterator();
+	}
+    Page oPage=oBaseLog.getPage();
+%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<LINK  href="../style/default.css" rel=stylesheet>
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script> 	<script type="text/javascript" src="../js/body.js"></script> 	<script type="text/javascript" src="../js/table.js"></script>
+<STYLE>
+	 kingtop\:time {behavior: url(../htc/time.htc);}
+</STYLE>
+<title><%=Config.SystemName%></title>
+</head>
+<body leftmargin="0" topmargin="0" >
+<table border="0" cellpadding="0" cellspacing="0" width="95%" align="center">
+  <tr>
+    <td width="100%">
+      <table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td colspan="2" height="10"> </td>
+        </tr>
+        <tr>
+          <td width="68%">
+            <input type=button class="btn"  onClick="doDelete();"  border="0" name="save2" value="删除" >
+            <input type=button class="btn"  onClick="selectAll(document.getElementsByName('idArray'))"  border="0" name="save22" value="全选" >
+            <input type=button class="btn"  onClick="inverse(document.getElementsByName('idArray'))"  border="0" name="save223" value="反选" >
+            </td>
+          <td width="31%" height="30" align="right" ></td>
+        </tr>
+      </table>
+   </td>
+  </tr>
+</table>
+<table class="query_table" border="0" cellpadding="0" cellspacing="0" align="center" width="95%">
+<form id="searchForm" name="searchForm" method="post" action="log_list.jsp">
+  <tr>
+    <td height="34" > &nbsp;
+      <select name="searchField" SelectValue="<%=searchField%>">	 
+	    <option value="userName">人员</option>
+		<option value="systemName">系统名称</option>
+		<option value="moduleName">模块名称</option>
+        <option value="content">日志</option>	  
+      </select>
+      ：
+      <input type="hidden" name="userId" value="1" />
+      <input name="searchValue" value="<%=searchValue%>" type="text" size="15">
+      &nbsp;从&nbsp;<kingtop:time  name="startTime"  checked="<%=startTime==null?false:true%>" value="<%=startTime%>" optional="true"></kingtop:time>
+      &nbsp;到&nbsp; <kingtop:time  name="endTime"  checked="<%=endTime==null?false:true%>" value="<%=endTime%>" optional="true"  ></kingtop:time></td>
+    <td width="7%" align="right" >
+<input type="button" class="btn"  onClick="doSearch()"  border="0" name="search" value="搜索" >
+    </td>
+  </tr>
+ </form>
+</table>
+<br>
+<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="right"></td>
+  </tr>
+</table>
+<table class="list" style="behavior:url(../htc/table.htc)" FixRow="<%=pageSize%>" cellspacing=1 cellpadding=0 width="95%" align=center  border=0 >
+  <tbody>
+    <tr class="title"   >
+      <td  width="5%">选择</td>
+      <td  width="10%" >人员</td>
+      <td  width="13%">系统名称</td>
+      <td  width="14%">模块名称</td>
+      <td  width="32%">操作日志</td>
+      <td>IP地址</td>
+      <td  height=26 DataType="DATE">时间</td>
+    </tr>
+    <%
+        while(it.hasNext()){
+            BaseLog baseLog=(BaseLog)it.next();            
+        %>
+    <tr class="odd">
+      <td width="5%" > <input type="checkbox" name="idArray" value="<%=baseLog.getId()%>"></td>
+      <td width="10%" align="center" ><%=baseLog.getUserName()%></td>
+      <td width="13%" align="left"  ><%=baseLog.getSystemName()%></td>
+      <td width="14%" align="left"  ><%=baseLog.getModuleName()%></td>
+      <td width="32%" align="left" ><%=baseLog.getContent()%></td>
+      <td width="10%" align="center"   ><%=baseLog.getIp()%></td>
+      <td width="16%" align="center" ><%=baseLog.getNodeTime()%></td>
+    </tr>
+    <%}%>
+  </tbody>
+</table>
+<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+     <td width="50%" height="33" align="left"><%=oPage.getInfo()%></td>
+    <td width="50%" align="right"><%=oPage.getButton(pageUrl)%></td>
+  </tr>
+</table>
+</body>
+</html>
+<script language="javascript">
+function doDelete()
+{
+	if (deleteData(document.getElementsByName('idArray'),'logAction.do?action=deleteData'))
+	document.location.reload();
+}
+//响应搜索按钮
+function doSearch()
+{
+	$("#searchForm").submit();
+}
+
+</script>

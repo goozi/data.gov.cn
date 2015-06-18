@@ -1,0 +1,124 @@
+<%@ page contentType="text/html; charset=GBK" %>
+<%@ include file="../include.jsp" %>
+<%@ page import="com.dhccity.base.entity.BaseType" %>
+<%@ page import="com.dhccity.base.entity.BaseSecurity" %>
+
+<%
+	long securityId=req.getLong("securityId");
+	BaseSecurity security=(BaseSecurity) new BaseSecurity().findById(securityId);
+	Iterator it=new BaseSecurity().findChildByParentId(securityId).iterator();      
+%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<LINK  href="../style/default.css" rel=stylesheet>
+<link rel="stylesheet" href="../htc/default.jss" type="text/css">
+<STYLE>
+	 kingtop\:date {behavior: url(../htc/date.htc);}
+</STYLE>
+<title><%=Config.SystemName%></title>
+</head>
+
+<body >
+<form name="dataForm" method="POST" action="userSecurityAction.do?action=addData" Check="true" Change="true">
+
+  <table class="edit"  cellspacing=1 cellpadding=3
+            width="95%" align=center border=0>
+    <tbody>
+      <tr class="title"> 
+        <td colspan=4 height=8><b>类型选项信息 
+          <input type="hidden" name="securityId" value="<%=securityId%>">
+          </b></td>
+      </tr>
+      <tr > 
+        <td  align=right>功能名称：</td>
+        <td width="81%" colspan="3" > <%=security.getName()%></td>
+      </tr>
+      <tr > 
+        <td width="19%" height="35"  align=right>拥有权限：</td>
+        <td colspan="3" > 
+          <%
+	while(it.hasNext())
+	{
+		BaseSecurity baseSecurity=(BaseSecurity) it.next();
+		out.print("<input type='checkbox' name='securityArray' value='" + baseSecurity.getId() + "'>" + baseSecurity.getName() + "&nbsp;");
+	}
+
+%>
+        </td>
+      </tr>
+      <tr > 
+        <td rowspan="3"  align=right>权限拥有者：</td>
+        <td height="39" colspan="3">
+<input name="type" type="radio" value="1" checked>
+          部门：
+          <select name="departmentId1" style="width:150px;" first="true" NodeXmlSrc="xmlAction.dox?action=createDepartmentAndUser2" subName="ownerId1">
+          </select>
+          人员 ： 
+          <select  name="ownerId1" style="width:150px;">
+          </select>
+        </td>
+      </tr>
+      <tr >
+        <td height="36" colspan="3">
+<input type="radio" name="type" value="2">
+          部门： 
+          <select name="departmentId2" style="width:150px;"><option value="0"></option><%=TreeApp.createOption("Department",TreeApp.ID)%> 
+          </select> 
+          职务 ： <select name="ownerId2" style="width:150px;"><option value="0"></option><%=TypeApp.createOption("DUTY",TypeApp.ID)%> </select> </td>
+      </tr>
+      <tr >
+        <td height="39" colspan="3">
+<input type="radio" name="type" value="3">
+          部门： <select name="departmentId3" style="width:150px;"><option value="0"></option><%=TreeApp.createOption("Department",TreeApp.ID)%> 
+          </select> 
+          角色 ： <select name="ownerId3" style="width:150px;"><option value="0"></option><%=TypeApp.createOption("ROLE",TypeApp.ID)%> </select></td>
+      </tr>
+    </tbody>
+  </table>
+<br>
+<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td height="29" align="center">
+      <input type="button" class="btn"   border="0" name="sure" value="确定" onClick="doSure()" >
+      <input type=button class="btn"  border="0" name="cancel" value="取消" onclick="self.close();">
+    </td>
+  </tr>
+</table>
+</form>
+</body>
+</html>
+<script language="javascript">
+function doSure()
+{
+	var securityArray=document.all("securityArray");
+	var securityObj;
+	var isSelect=false;
+	if (securityArray.length>0)
+	{
+		for (var i=0;i<securityArray.length;i++)
+		{
+			if (securityArray[i].checked) 
+			{
+				isSelect=true;
+				break;
+			}
+		}
+		securityObj=securityArray[0];
+	}
+	else
+	{
+		isSelect=securityArray.checked;
+		securityObj=securityArray;
+	}
+
+	if (!isSelect) 
+	{
+		securityObj.focus();
+		showMessage("请选择相应的权限",securityObj);		
+		return;
+	}
+	document.all("dataForm").doSubmit();
+	
+}
+</script>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/base/business/DocumentApp.java" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/base/servlet/MenuAction.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/data/entity/DataResource.java" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/data/servlet/DataGroupAction.java" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/data/servlet/DataResourceAction.java" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/data/servlet/DatasetAction.java" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/src/com/dhccity/data/servlet/OrgAction.java" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/web/easyui_include.jsp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/easyui141/locale/easyui-lang-zh_CN.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/js/validate-extend.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/kindeditor/kindeditor.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/kindeditor/lang/zh_CN.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web/top.jsp" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

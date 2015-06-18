@@ -1,0 +1,340 @@
+<%@ page import="com.dhccity.app.entity.App" %>
+<%@ page import="com.dhccity.app.entity.AppDatasetRelation" %>
+<%@ page import="com.dhccity.base.entity.BaseDocument" %>
+<%@ page import="com.dhccity.base.entity.BaseUser" %>
+<%@ page import="com.dhccity.base.util.BaseConstant" %>
+<%@ page import="com.dhccity.data.entity.DataGroup" %>
+<%@ page import="com.dhccity.data.entity.DataResource" %>
+<%@ page import="com.dhccity.data.entity.Dataset" %>
+<%@ page import="com.dhccity.data.entity.Org" %>
+<%@ page import="com.dhccity.home.entity.Article" %>
+<%@ page import="com.dhccity.home.entity.Comment" %>
+<%@ page language="java" pageEncoding="utf-8" %>
+<%@ include file="include.jsps" %>
+<%
+    long id = req.getLong("id");
+    Dataset dataset = (Dataset) new Dataset().findById(id);
+    Org org = (Org) (new Org().findById(dataset.getOrgId()));
+    DataGroup dataGroup = (DataGroup) (new DataGroup().findById(dataset.getGroupId()));
+    String baseDocumnetPath = DocumentApp.getDocumentPath("appThumbnail");
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title><%=Config.SystemName%>
+    </title>
+    <script type="text/javascript" src="/js/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/js/easyui141/jquery.easyui.min.js"></script>
+    <script src="/js/aYin/aYin.js"></script>
+    <script src="/js/bootstrap/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/js/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="/style/carousel.css">
+    <link rel="stylesheet" type="text/css" href="/js/aYin/aYin.css">
+</head>
+<body>
+<div class="container container-main">
+    <div class="row row-3rd-cont">
+        <div class="col-xs-12 content-3rd">
+            <ol class="breadcrumb breadcrumb-ayin">
+                <li><a href="#"><i class="fa fa-home"></i> 数据</a></li>
+                <li><a href="#">数据集</a></li>
+                <li class="active"><%=dataset.getTitle()%>
+                </li>
+            </ol>
+
+            <div class="panel panel-default panel-ayin">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-8  col-mark data-title">
+                            <h3 class="panel-title"><%=dataset.getTitle()%>
+                            </h3>
+                            <span class="star-grade star-4-5"></span>
+                        </div>
+                        <div class="col-xs-4  col-mark data-bread">
+                            <ol class="breadcrumb">
+                                <li><%=org.getTitle()%>
+                                </li>
+                                <li><%=dataGroup.getTitle()%>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8  col-mark data-date">
+                            <span class="press-date">发布日期：<%=dataset.getCreateTime()%></span>
+                            <span class="update-date">更新日期：<%=dataset.getModifyTime()%></span>
+                        </div>
+                        <div class="col-xs-4  col-mark data-count">
+                            <span class="download-count"><i class="fa fa-download"></i> (<%=dataset.getDownloadNum()%>)</span>
+                            <span class="observe-count"><i class="fa fa-eye"></i> (<%=dataset.getReadNum()%>)</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                        <dt>描述信息：</dt>
+                        <dd>
+                            <%=dataset.getDescription()%>
+                        </dd>
+                        <%--<dt>关键字：</dt>--%>
+                        <%--<dd>公交路线，公交车，地铁，换乘，收费</dd>--%>
+                        <dt>更新频度：</dt>
+                        <dd><%=TypeApp.getName("UPDATE_RATE", dataset.getUpdateRate())%>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn-default btn-share" type="button"><i class="fa fa-envelope-o"></i></button>
+                    <button class="btn btn-default btn-share" type="button"><i class="fa fa-weibo"></i></button>
+                    <button class="btn btn-default btn-share" type="button"><i class="fa fa-qq"></i></button>
+                    <button class="btn btn-default btn-share" type="button"><i class="fa fa-wechat"></i></button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">数据资源</h3>
+                        </div>
+                        <div class="panel-body">
+                            <%
+                                List<DataResource> dataResourceList = new DataResource().findByDatasetId(id);
+                                Iterator<DataResource> dataResourceIterator = dataResourceList.iterator();
+                                while (dataResourceIterator.hasNext()) {
+                                    DataResource dataResource = dataResourceIterator.next();
+//                                    BaseDocument baseDocument = (BaseDocument) new BaseDocument().findBySource("dataResource", dataResource.getId());
+                                    BaseDocument baseDocument = (BaseDocument) DocumentApp.findDocument("dataResource", dataResource.getId()).get(0);
+                            %>
+                            <div class="row data-resource">
+                                <div class="col-xs-12 col-sm-6 col-md-4 data-resource-group">
+                                    <i class="data-icon fa fa-file-o"><i
+                                            class="desc label label-warning"><%=dataResource.getKind()%>
+                                    </i></i>
+
+                                    <p class="data-title"><span class="desc"
+                                                                title="<%=dataResource.getDescription()%>"><%=dataResource.getDescription()%></span><span
+                                            class="star-grade star-1"></span></p>
+
+                                    <p class="data-detail">
+                                        <span class="file-size"><i class="fa fa-info-circle"></i>1.9MB</span>
+                                        <span class="download-count"><i
+                                                class="fa fa-download"></i> (<%=dataResource.getDownloadNum()%>)</span>
+                                        <a href="/documentAction.dox?action=downloadFile&id=<%=baseDocument.getId()%>"><span
+                                                class="file-type"><i class="fa fa-file"></i> 下载</span></a>
+                                    </p>
+                                </div>
+                            </div>
+                            <%
+                                }
+                            %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">相关应用</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row data-resource">
+                                <%
+                                    List<AppDatasetRelation> appDatasetRelationList = new AppDatasetRelation().findByDatasetId(dataset.getId());
+                                    Iterator<AppDatasetRelation> appDatasetRelationIterator = appDatasetRelationList.iterator();
+                                    App oApp = new App();
+                                    while (appDatasetRelationIterator.hasNext()) {
+                                        AppDatasetRelation appDatasetRelation = appDatasetRelationIterator.next();
+                                        App app = (App) oApp.findById(appDatasetRelation.getAppId());
+                                        BaseDocument thumbnail = (BaseDocument) DocumentApp.findDocument("appThumbnail", app.getId()).get(0);
+                                %>
+                                <div class="col-xs-12 col-sm-6 col-md-4 data-resource-group">
+                                    <i class="data-icon"><img src="<%=baseDocumnetPath+thumbnail.getId() %>" width="48"
+                                                              height="48"
+                                                              alt=""/></i>
+
+                                    <p class="data-title"><span class="desc"><%=app.getCnName()%></span><span
+                                            class="star-grade star-3"></span></p>
+
+                                    <p class="data-detail">
+                                        <span class="app-dev"><i
+                                                class="fa fa-institution"></i><%=app.getDeveloper()%></span>
+                                        <span class="app-sys"><i class="fa fa-desktop"></i><%=app.getAppOs()%></span>
+                                        <span class="upload-date"><i class="fa fa-calendar"></i><%=app.getSubmitTime()%></span>
+                                    </p>
+                                </div>
+                                <%
+                                    }
+                                %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <style type="text/css" media="screen">
+
+
+                </style>
+
+                <div class="col-xs-12 col-sm-12 col-comment">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">用户评论</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row row-comment">
+                                <%
+                                    String avatarPath = DocumentApp.getDocumentPath("avatar");
+                                    Article article = new Article().getByTypeAndRelatId(BaseConstant.ARTICLE_TYPE_DATASET, id);
+                                    List<Comment> commentList = new Comment().findByArticleId(article.getId());
+                                    if (commentList.size() > 0) {
+                                        Iterator<Comment> commentIterator = commentList.iterator();
+                                        while (commentIterator.hasNext()) {
+                                            Comment comment = commentIterator.next();
+                                            BaseUser baseUser = (BaseUser) new BaseUser().findById(comment.getCreator());
+                                            BaseDocument avatar = (BaseDocument) DocumentApp.findDocument("avatar", baseUser.getId()).get(0);
+                                %>
+                                <div class="col-xs-12 comment-group">
+                                    <i class="user-head"><img src="<%=avatarPath+avatar.getId()%>" alt=""/></i>
+
+                                    <p class="comm-detail">
+                                        <i class="fa fa-user"></i> <%=baseUser.getName()%> <i
+                                            class="fa fa-clock-o"></i> <%=comment.getCreateTime()%>
+                                    </p>
+
+                                    <p class="comm-content"><%=comment.getContent()%>
+                                    </p>
+                                </div>
+                                <%
+                                        }
+                                    }
+                                    User user = (User) session.getAttribute("user");
+                                %>
+                                <form name="commentForm" id="commentForm" method="post"
+                                      action="commentAction.do?action=addData">
+                                    <div class="col-xs-12 comment-now ">
+                                        <input type="hidden" name="articleId" value="<%=article.getId()%>">
+                                    <textarea name="content" id="dataset_comment" cols="30" rows="5"
+                                              placeholder="请发表您的评论"
+                                              class="form-control" <%=user == null ? "readonly" : ""%>></textarea>
+
+                                        <div class="toolbar">
+                                            <button class="btn btn-primary btn-submit" type="button">发表评论</button>
+                                            <button class="btn btn-default btn-chat-assist" type="button"><i
+                                                    class="fa fa-smile-o"></i></button>
+                                            <button class="btn btn-default btn-chat-assist" type="button"><i
+                                                    class="fa fa-font"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹出框-->
+<form name="loginForm" id="loginForm" method="post" action="loginAction.dox?action=login">
+    <div class="modal fade" id="login-modal" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">账户登录</h4>
+                </div>
+                <div class="modal-body">
+                    <ul class="reg-cont">
+                        <li><i class="fa fa-user"></i><input id="lgnName" name="loginName" type="text" validType="username"
+                                                             class="form-control easyui-validatebox"
+                                                             placeholder="请输入您的用户名"
+                                                             data-toggle="popover" data-trigger="manual"
+                                                             data-content="请填写您的账户名，必填项"/></li>
+                        <li><i class="fa fa-ellipsis-h"></i><input id="pwd" name="password" type="password"
+                                                                   validType="name"
+                                                                   class="form-control easyui-validatebox"
+                                                                   placeholder="请输入您的密码" data-toggle="popover"
+                                                                   data-trigger="manual"
+                                                                   data-content="请填写您的密码，必填项"/></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary">登录</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+
+    </div>
+    <!-- /.modal -->
+</form>
+</body>
+</html>
+
+<script type="text/javascript" charset="utf-8">
+    $(".data-resource-group").interaction({type: "button"});
+    $('#dataset_comment').click(function () {
+//        debugger;
+        if ($(this).attr('readonly') == 'readonly') {
+            $('#login-modal').modal('show');
+        }
+    });
+    $('.btn-submit').click(function () {
+        if ($(this).attr('readonly') != true) {
+            $("#commentForm").ajaxSubmit({
+                type: 'post',
+                url: "/home/commentAction.do?action=addData",
+                success: function (commentBack) {
+                    debugger;
+                    if (commentBack == 'success') {
+                        $.messager.alert('成功', '评论成功！', 'info');
+                        $("#dataset_comment").val('');
+                        $("#dataset_comment").attr('readonly', true);
+                        location.reload();
+                    }
+
+                }
+            });
+        }
+    });
+    $('.btn-primary').click(function(){
+        if($('#lgnName').val()==''){
+            $('#lgnName').popover('show');
+            return;
+        }
+        if($('#pwd').val()==''){
+            $('#pwd').popover('show');
+            return;
+        }
+        $("#loginForm").ajaxSubmit({
+            type: 'post',
+            url: "/loginAction.dox?action=login" ,
+            success: function(loginBack){
+//                debugger;
+                if(loginBack=='success') {
+//                    $.messager.alert('成功', '登录成功！', 'info');
+//                    $("#loginForm").clearForm();
+                    $('#login-modal').modal('hide');
+//                    $('#main').attr('src', $('#main').attr('src'));
+                    location.reload();
+                }
+                if(loginBack=='false') {
+                    $.messager.alert('失败', '登录失败，用户名或密码错误！', 'info');
+                    $("#pwd").val('');
+                }
+            }
+        });
+    });
+</script>

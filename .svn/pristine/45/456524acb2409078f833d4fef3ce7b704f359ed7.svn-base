@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.dhccity.interact.entity.Survey" table="SURVEY" schema="DGC">
+        <id name="id">
+            <generator class="identity">
+            </generator>
+        </id>
+        <property name="gender">
+            <column name="GENDER" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="age">
+            <column name="AGE" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="work">
+            <column name="WORK" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="address">
+            <column name="ADDRESS" sql-type="varchar2" length="200"/>
+        </property>
+        <property name="accessRate">
+            <column name="ACCESS_RATE" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="designMark">
+            <column name="DESIGN_MARK" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="knownMethod">
+            <column name="KNOWN_METHOD" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="useBiz">
+            <column name="USE_BIZ" sql-type="varchar2" length="10"/>
+        </property>
+        <property name="suggest">
+            <column name="SUGGEST" sql-type="varchar2" length="2500"/>
+        </property>
+        <property name="email">
+            <column name="EMAIL" sql-type="varchar2" length="100"/>
+        </property>
+        <property name="name">
+            <column name="NAME" sql-type="varchar2" length="100"/>
+        </property>
+        <property name="createTime" type="timestamp">
+            <column name="CREATE_TIME" />
+        </property>
+    </class>
+</hibernate-mapping>

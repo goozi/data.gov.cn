@@ -1,0 +1,144 @@
+<%@ page import="com.dhccity.app.entity.App" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="include.jsps" %>
+<%
+
+    String appCharge = req.getString("appCharge");
+    String category = req.getString("category");
+    String appOs = req.getString("appOs");
+    float stars = req.getFloat("stars");
+    String order = req.getString("order");
+    String searchText = req.getString("searchText");
+    int currPage = req.getInt("currPage") == 0 ? 1 : req.getInt("currPage");
+    int pageSize = 5;
+    String pageUrl = req.getPageUrl();
+    App oApp = new App();
+    List<App> appList = oApp.search(appCharge, category, appOs, stars, order, searchText, currPage, pageSize);
+    Page oPage = oApp.getPage();
+%>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>开放数据平台</title>
+    <script type="text/javascript" src="/js/jquery-1.11.3.js"></script>
+    <script src="/js/aYin/aYin.js"></script>
+    <script src="/js/bootstrap/js/bootstrap.js"></script>
+    <script src="/js/jquery.twbsPagination.js"></script>
+    <script src="/js/jquery.raty.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/js/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="/style/carousel.css">
+    <link rel="stylesheet" type="text/css" href="/js/aYin/aYin.css">
+</head>
+<body>
+<div id="pageUrl" style="display: none;"><%=pageUrl%>
+</div>
+<%
+    Iterator<App> it = appList.iterator();
+    while (it.hasNext()) {
+        App app = it.next();
+%>
+<div class="panel panel-default panel-ayin">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-8  col-mark data-title">
+                <h3 class="panel-title">
+                    <a href="app_view.jsps?id=<%=app.getId()%>" target="main"><%=app.getCnName()%>
+                    </a>
+                </h3>
+                <div class="star-grade" id="star_<%=app.getId()%>_<%=app.getStars()%>"></div>
+            </div>
+            <div class="col-xs-4  col-mark data-bread">
+                <ol class="breadcrumb">
+                    <li><%=TypeApp.getName("APP_CATEGORY",app.getCategory())%>
+                    </li>
+                    <li><%=TypeApp.getName("APP_OS",app.getAppOs())%>
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8  col-mark data-date">
+                <span class="press-date">提交日期：<%=app.getSubmitTime()%></span>
+                <span class="update-date">更新日期：<%=app.getModifyTime()%></span>
+            </div>
+            <div class="col-xs-4  col-mark data-count">
+                <span class="observe-count"><i class="fa fa-eye"></i> (<%=app.getReadNum()%>)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+            <dt>内容摘要：</dt>
+            <dd>
+                <div style="display: none;"><%=app.getDescription()%>
+                </div>
+            </dd>
+        </dl>
+    </div>
+</div>
+<%}%>
+<nav>
+    <ul id="app_paging" class="pagination">
+    </ul>
+</nav>
+</body>
+<script>
+    $(document).ready(function () {
+        $('.panel-body dl').each(function (i, val) {
+//            debugger;
+            var desc = $(val).find('dd:eq(0) div').text();
+            if (desc.length > 300) {
+                desc = desc.substr(1, 300) + '...';
+            }
+            $(val).children('dd:eq(0)').html(desc);
+        });
+        $('#app_paging').twbsPagination({
+            totalPages: <%=oPage.getTotalPage()%>,
+            visiblePages: 5,
+            startPage:<%=currPage%>,
+            href: '<%=pageUrl%>currPage={{number}}',
+            first: '第一页',
+            prev: '前一页',
+            next: '后一页',
+            last: '最后页',
+            loop: true
+        });
+        $.fn.raty.defaults.path = '/images/raty';
+        $("div[id^='star']").raty({
+            score: function () {
+                var starid = $(this).attr('id').split('_');
+                return starid[2];
+            }, click: function (score, evt) {
+                var starid = $(this).attr('id').split('_');
+                $.get('/app/appAction.dox?action=updateStars&id=' + starid[1] + '&star=' + score, function (data) {
+                    if (data == 'success') {
+                        alert('评分成功');
+                        $.cookie("app_star" + starid[1], score, {expires: 7});
+                        $("div[id^='star_" + starid[1] + "']").raty('readOnly', true);
+                    }
+                });
+
+            }, readOnly: function () {
+                var starid = $(this).attr('id').split('_');
+                if ($.cookie("app_star" + starid[1]) != null) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }, hints: ['太糟了', '不是很好', '一般', '还行', '很好']
+        });
+
+        $('.panel-title a').click(function(){
+            var id = /\?id=(\d+)$/.exec($(this).attr('href'))[1];
+            $.get('/app/appAction.dox?action=updateReadNum&id='+id);
+        })
+        $('#totalArticle', window.parent.document).html(<%=appList.size()%>);
+    });
+</script>
+</html>

@@ -1,0 +1,149 @@
+package com.dhccity.data.servlet;
+
+import java.io.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import com.dhccity.base.util.BaseConstant;
+import org.light.*;
+import com.dhccity.data.entity.Dataset;
+
+/**
+ * <p>
+ * Title: Dataset对象管理Servlet类
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * :);
+ * <p>
+ * Company: Kingtop
+ * </p>
+ * <p>
+ * CreateDate: 2015-05-14 16:07:19
+ * </p>
+ *
+ * @author Zerrion
+ * @version 1.0
+ */
+public class DatasetAction extends ServletAction implements BaseConstant {
+    private final String SYSTEM_NAME = "";
+    private final String MODULE_NAME = "";
+    private final int WINDOW_TYPE = 1; // 0表示无效、1表示调转、2表示关闭
+
+    /**
+     * 增加一条数据
+     */
+    public void addData(HttpRequest request, HttpServletResponse response,
+                        User user) throws ServletException, IOException {
+        String flow = request.getString("flow");
+        String name = request.getString("name");
+        String title = request.getString("title");
+        String description = request.getString("description");
+        //int state = request.getInt("state");
+        String isPublic = request.getString("isPublic");
+        //long creator = request.getLong("creator");
+        //Date createTime = request.getDate("createTime");
+        //long modifyUser = request.getLong("modifyUser");
+        //Date modifyTime = request.getDate("modifyTime");
+        String updateRate = request.getString("updateRate");
+        //long downloadNum = request.getLong("downloadNum");
+        //long readNum = request.getLong("readNum");
+        long orgId = request.getLong("orgId");
+        long groupId = request.getLong("groupId");
+
+        Date now = new Date();
+
+        // 新建一个对象
+        Dataset dataset = new Dataset();
+        dataset.setName(name);
+        dataset.setTitle(title);
+        dataset.setDescription(description);
+        dataset.setState(STATE_NORMAL);
+        dataset.setIsPublic(isPublic);
+        dataset.setCreator(user.getId());
+        dataset.setCreateTime(now);
+        //dataset.setModifyUser(modifyUser);
+        //dataset.setModifyTime(modifyTime);
+        dataset.setUpdateRate(updateRate);
+        //dataset.setDownloadNum(downloadNum);
+        //dataset.setReadNum(readNum);
+        dataset.setOrgId(orgId);
+        dataset.setGroupId(groupId);
+        dataset.add(); // 增加记录
+
+        user.addLog(SYSTEM_NAME, MODULE_NAME, "增加记录[" + dataset.getId() + "]");
+        if ("single".equals(flow)) {
+            doReturn(response, WINDOW_TYPE, "dataset_list.jsp");
+        } else if ("multi".equals(flow)) {
+            doReturn(response, WINDOW_TYPE,
+                    "datasetResource_add.jsp?datasetId=" + dataset.getId());
+        }
+    }
+
+    /**
+     * 修改指定数据
+     */
+    public void updateData(HttpRequest request, HttpServletResponse response,
+                           User user) throws ServletException, IOException {
+        long id = request.getLong("id");
+        String name = request.getString("name");
+        String title = request.getString("title");
+        String description = request.getString("description");
+        int state = request.getInt("state");
+        String isPublic = request.getString("isPublic");
+        long creator = request.getLong("creator");
+        Date createTime = request.getDate("createTime");
+        long modifyUser = request.getLong("modifyUser");
+        Date modifyTime = request.getDate("modifyTime");
+        String updateRate = request.getString("updateRate");
+        long downloadNum = request.getLong("downloadNum");
+        long readNum = request.getLong("readNum");
+        long orgId = request.getLong("orgId");
+        long groupId = request.getLong("groupId");
+
+        // 新建一个对象
+        Dataset dataset = (Dataset) new Dataset().findById(id);
+        dataset.setId(id);
+        dataset.setName(name);
+        dataset.setTitle(title);
+        dataset.setDescription(description);
+        dataset.setState(state);
+        dataset.setIsPublic(isPublic);
+        dataset.setCreator(creator);
+        dataset.setCreateTime(createTime);
+        dataset.setModifyUser(modifyUser);
+        dataset.setModifyTime(modifyTime);
+        dataset.setUpdateRate(updateRate);
+        dataset.setDownloadNum(downloadNum);
+        dataset.setReadNum(readNum);
+        dataset.setOrgId(orgId);
+        dataset.setGroupId(groupId);
+        dataset.update(); // 修改记录
+
+        user.addLog(SYSTEM_NAME, MODULE_NAME, "修改记录[]");
+        doReturn(response, WINDOW_TYPE, "dataset_list.jsp");
+    }
+
+    /**
+     * 删除数据
+     */
+    public void deleteData(HttpRequest request, HttpServletResponse response,
+                           User user) throws ServletException, IOException {
+        long[] idArray = request.getLongArray("idArray");
+        String log = "";
+
+        // 新建一个对象
+        Dataset dataset = new Dataset();
+        if (idArray != null) {
+            for (int i = 0; i < idArray.length; i++) {
+                dataset.delete(idArray[i]); // 删除记录
+                log += idArray[i] + ";";
+            }
+        }
+
+        user.addLog(SYSTEM_NAME, MODULE_NAME, "删除记录[" + log + "]");
+    }
+
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_USER-->
+<!--<mapping resource="com/kingtop/base/hbm/BASE_USER.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseUser" table="BASE_USER">
+		<id name="id"  column="ID">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property name="name"  column="NAME"/>
+		<property name="loginName"  column="LOGIN_NAME"/>
+		<property name="password"  column="PASSWORD"/>
+		<property name="departmentId"  column="DEPARTMENT_ID"/>
+		<property name="sex"  column="SEX"/>
+		<property name="ename"  column="ENAME"/>
+		<property name="nationality"  column="NATIONALITY"/>
+		<property name="code"  column="CODE"/>
+		<property name="identityCard"  column="IDENTITY_CARD"/>
+		<property name="birthday"  column="BIRTHDAY"/>
+		<property name="nativePlace"  column="NATIVE_PLACE"/>
+		<property name="party"  column="PARTY"/>
+		<property name="tel"  column="TEL"/>
+		<property name="fax"  column="FAX"/>
+		<property name="mobileTel"  column="MOBILE_TEL"/>
+		<property name="email"  column="EMAIL"/>
+		<property name="joinDate"  column="JOIN_DATE"/>
+		<property name="joinType"  column="JOIN_TYPE"/>
+		<property name="boss"  column="BOSS"/>
+		<property name="assistant"  column="ASSISTANT"/>
+		<property name="ip"  column="IP"/>
+		<property name="sequ"  column="SEQU"/>
+		<property name="type"  column="TYPE"/>
+		<property name="state"  column="STATE"/>
+		<property name="isProgrammer"  column="IS_PROGRAMMER"/>
+		<property name="isAdmin"  column="IS_ADMIN"/>
+	</class>
+</hibernate-mapping>

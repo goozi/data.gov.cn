@@ -1,0 +1,182 @@
+<%@ page import="com.dhccity.data.entity.DataGroup" %>
+<%@ page import="com.dhccity.data.entity.Org" %>
+<%@ page language="java" pageEncoding="utf-8" %>
+<%@ include file="include.jsps" %>
+<%
+    Iterator<Org> orgIt = new Org().findAll().iterator();
+    Iterator<DataGroup> dataGroupIt = new DataGroup().findAll().iterator();
+//    long dataGroupId = req.getLong("dataGroupId");
+    String searchText = req.getString("searchText");
+    //long dataGroupId = 1;
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="gbk">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>开放数据平台</title>
+
+    <script type="text/javascript" src="/js/jquery-1.11.3.js"></script>
+    <script src="/js/aYin/aYin.js"></script>
+    <script src="/js/bootstrap/js/bootstrap.js"></script>
+    <script src="/js/easyui141/jquery.easyui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/js/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="/style/carousel.css">
+    <link rel="stylesheet" type="text/css" href="/js/aYin/aYin.css">
+</head>
+<body>
+<div class="container container-main">
+    <div class="row row-2nd-cont">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 sideNav-wrap">
+            <ul class="sideNav tree2 portal-tree">
+                <li><a href="api_list.jsps" target="api_list">所有数据</a></li>
+                <li>按发布机构分类
+                    <ul id="org_nav">
+                        <%
+                            while (orgIt.hasNext()) {
+                                Org org = orgIt.next();
+                        %>
+                        <li><a href="api_list.jsps?orgId=<%=org.getId()%>" target="api_list"><i
+                                class="fa <%=org.getLogo()%>"></i><%=org.getTitle()%>
+                        </a></li>
+                        <%
+                            }
+                        %>
+                    </ul>
+                </li>
+
+                <li>按数据主题分类
+                    <ul id="group_nav">
+                        <%
+                            while (dataGroupIt.hasNext()) {
+                                DataGroup dataGroup = dataGroupIt.next();
+                        %>
+                        <li>
+                            <a href="api_list.jsps?groupId=<%=dataGroup.getId()%>" target="api_list">
+                                <i class="fa <%=dataGroup.getLogo()%>"></i><%=dataGroup.getTitle()%>
+                            </a>
+                        </li>
+                        <%
+                            }
+                        %>
+                    </ul>
+                </li>
+                <li>按API评分分类
+                    <ul>
+                        <li>
+                            <a href="api_list.jsps?stars=5" target="api_list">
+                                <i class="star-grade star-5"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="api_list.jsps?stars=4" target="api_list">
+                                <i class="star-grade star-4"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="api_list.jsps?stars=3" target="api_list">
+                                <i class="star-grade star-3"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="api_list.jsps?stars=2" target="api_list">
+                                <i class="star-grade star-2"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="api_list.jsps?stars=1" target="api_list">
+                                <i class="star-grade star-1"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 content-2nd">
+            <ol class="breadcrumb breadcrumb-ayin">
+                <li><a href="home.jsps" target="main"><i class="fa fa-home"></i> 主页</a></li>
+                <li><a href="api_list.jsps" target="main" class="active">API列表</a></li>
+                <li class="info"><i class="fa fa-database"></i> 共有<span id="totalDataset"></span>条数据</li>
+            </ol>
+
+            <div class="utility-toolbar">
+                <div class="row">
+                    <div class="col-xs-6  col-sm-6 col-md-7 col-mark">
+                        <div class="sort-data">
+                            <span class="desc">排序：</span>
+                            <select name="apiOrder" id="datasetOrder" class="form-control">
+                                <option value="readNum">按阅读数排序</option>
+                                <option value="modifyTime">按更新时间排序</option>
+                                <option value="createTime">按发布时间排序</option>
+                                <option value="stars">按评分排序</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-5 col-mark">
+                        <div class="input-group search-group">
+                            <input id="searchText" type="text" class="form-control" placeholder="当前结果中搜索">
+                      <span class="input-group-btn">
+                        <button id="deepSearch" class="btn btn-primary" type="button"><i class="fa fa-search"></i> 搜索
+                        </button>
+                      </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <iframe src="api_list.jsps?searchText=<%=searchText%>" id="api_list" name="api_list" frameborder="0" width="100%"
+                    height="100%" onload="iFrameHeight()"></iframe>
+        </div>
+    </div>
+
+
+</div>
+<!-- /.container  <hr class="featurette-divider">-->
+
+</body>
+</html>
+
+<script type="text/javascript" charset="utf-8">
+    function iFrameHeight() {
+        var ifm = document.getElementById("api_list");
+        var subWeb = document.frames ? document.frames["api_list"].document : ifm.contentDocument;
+        if (ifm != null && subWeb != null) {
+            ifm.height = subWeb.body.scrollHeight;
+        }
+    }
+    $(document).ready(function () {
+        //$(".row-data .icon-group,.p-content .list-group").interaction({type:"button"});
+
+        $(function () {
+            $(".sideNav").tree2nd({
+                active: "1",
+                onlyOneActive: true
+            });
+        });
+
+        $('#apiOrder').on('change', function () {
+            var order = $(this).children('option:selected').val();
+            var pageUrl = $("#api_list").contents().find("#pageUrl").text();
+            pageUrl= pageUrl.replace(/order=[^&]+/g, '');
+            $('#api_list').attr("src", pageUrl + "order=" + order);
+        });
+        $('#deepSearch').on('click', function () {
+//            debugger;
+            if ($('#searchText').val() == null) {
+                $.messager.alert('警告', '请输入搜索关键字', 'warning');
+                $('#searchText').focus();
+                return;
+            } else {
+                var pageUrl = $("#api_list").contents().find("#pageUrl").text();
+                pageUrl = pageUrl.replace(/&searchText=[^&]+/g,'');
+                $('#api_list').attr("src", pageUrl + 'searchText=' + $('#searchText').val());
+            }
+        });
+    });
+</script>

@@ -1,0 +1,96 @@
+package com.dhccity.base.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import org.light.*;
+import com.dhccity.base.entity.*;
+
+/**
+ * <p>Title: BASE_USER_SECURITY 表管理Servlet类</p>
+ * <p>Description:BASE_USER_SECURITY</p>
+ * <p>Company: dhccity</p>
+ * <p>CreateDate: 2006-02-14 14:33</p>
+ * @author liuxd
+ * @version 1.0
+ * <servlet><servlet-name>UserSecurityAction</servlet-name><servlet-class>com.dhccity.base.servlet.UserSecurityAction</servlet-class></servlet>
+   <servlet-mapping><servlet-name>UserSecurityAction</servlet-name><url-pattern>/baseUserSecurityAction</url-pattern></servlet-mapping>
+ */
+
+public class UserSecurityAction extends ServletAction
+{
+	private final String SYSTEM_NAME = "系统维护子系统";
+	private final String MODULE_NAME = "权限设置";
+	private final int WINDOW_TYPE = 2; //0表示无效、1表示调转、2表示关闭
+
+	/**
+	 * 增加数据
+	 */
+	public void addData(HttpRequest request, HttpServletResponse response, User user) throws ServletException, IOException
+	{
+		long securityId = request.getLong("securityId");
+		String[] securityArray = request.getStringArray("securityArray");
+
+		String security = "";
+
+		for (int i = 0; i < securityArray.length; i++)
+		{
+			security += "{" + securityArray[i] + "}";
+		}
+
+		int type = request.getInt("type");
+		long departmentId, ownerId;
+		if (type == 1)
+		{
+			departmentId = request.getLong("departmentId1");
+			ownerId = request.getLong("ownerId1");
+		}
+		else if (type == 2)
+		{
+			departmentId = request.getLong("departmentId2");
+			ownerId = request.getLong("ownerId2");
+		}
+		else
+		{
+			departmentId = request.getLong("departmentId3");
+			ownerId = request.getLong("ownerId3");
+		}
+		int sequ = request.getInt("sequ");
+
+		//新建一个对象
+		BaseUserSecurity baseUserSecurity = new BaseUserSecurity();
+		baseUserSecurity.setSecurityId(securityId);
+		baseUserSecurity.setSecurityArray(security);
+		baseUserSecurity.setType(type);
+		baseUserSecurity.setDepartmentId(departmentId);
+		baseUserSecurity.setOwnerId(ownerId);
+		baseUserSecurity.setSequ(sequ);
+		baseUserSecurity.add(); //增加记录
+
+		user.addLog(SYSTEM_NAME, MODULE_NAME, "增加记录[" + baseUserSecurity.getId() + "]");
+		doReturn(response, WINDOW_TYPE);
+	}
+
+	/**
+	 * 删除数据集
+	 */
+	public void deleteData(HttpRequest request, HttpServletResponse response, User user) throws ServletException, IOException
+	{
+		long[] idArray = request.getLongArray("idArray");
+		String log = "";
+
+		//新建一个对象
+		BaseUserSecurity baseUserSecurity = new BaseUserSecurity();
+		if (idArray != null)
+		{
+			for (int i = 0; i < idArray.length; i++)
+			{
+				baseUserSecurity.delete(idArray[i]); //删除记录
+				log += idArray[i] + ";";
+			}
+		}
+		user.addLog(SYSTEM_NAME, MODULE_NAME, "删除记录[" + log + "]");
+	}
+
+}

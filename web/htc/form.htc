@@ -1,0 +1,264 @@
+<PUBLIC:COMPONENT >
+
+/**
+ * <p>Title: Form封闭类 </p>
+ * <p>Description:</p>
+ * <p>Company: Kingtop</p>
+ * <p>CreateDate: 2005-05-18 09:36</p>
+ * @author liuxd
+ * @version 1.0
+ */
+
+//=================属性=================
+<PUBLIC:PROPERTY name="Check" />									//提交前是否进行检查
+<PUBLIC:PROPERTY name="Change" />									//是否改变特殊字符
+
+
+//=================事件=================
+<PUBLIC:ATTACH event="onsubmit" handler="goSubmit" />				//响应提交事件
+<PUBLIC:ATTACH event="onkeydown" handler="doKeydown" />				//响应按键事件
+
+//=================方法=================
+<PUBLIC:METHOD   NAME="doSubmit"/>									//表单提交
+<PUBLIC:METHOD   NAME="doCheck"/>									//检查表单是否正确
+<PUBLIC:METHOD   NAME="doSend"/>									//发送表单--GET方式
+
+<SCRIPT language="javascript">
+
+var oFirstNull;														//第一个为空对象
+
+/**
+* 处理按键事件（以重载方式，屏蔽回车键）
+*/
+function doKeydown()
+{	
+	if (event.keyCode==13)
+	{
+		if (event.srcElement.type=="text"||event.srcElement.type=="password")
+		{
+			event.returnValue =false;
+		}		
+	}
+}
+
+
+/**
+* 表单提交方法
+*/
+function doSubmit()
+{
+	if (doCheck_()=="ERROR")
+	{
+		return;
+	}
+	else if (doCheck_()=="NULL")
+	{
+		element.document.body.showNull(oFirstNull);
+		oFirstNull.focus();
+		return;		
+	}
+
+	if (Change=="true")
+	{
+		changeChar();		//替换特殊字符
+	}	
+	this.submit();
+}
+
+/**
+* 处理提交事件
+*/
+function goSubmit()
+{
+	if (doCheck_()=="ERROR")
+	{
+		event.returnValue = false;
+		return;
+	}
+	else if (doCheck_()=="NULL")
+	{
+		element.document.body.showNull(oFirstNull);
+		oFirstNull.focus();
+		event.returnValue = false;
+		return;		
+	}
+
+	if (Change=="true")
+	{
+		changeChar();		//替换特殊字符
+	}	
+	event.returnValue = true;
+	
+}
+
+/**
+* 对表单里的控件符合性进行检查
+*/
+function doCheck()
+{
+	if (doCheck_()=="ERROR")
+	{
+		return false;
+	}
+	else if (doCheck_()=="NULL")
+	{
+		element.document.body.showNull(oFirstNull);
+		oFirstNull.focus();
+		return false;		
+	}
+
+	return true;
+}
+
+
+/**
+* 对表单对象进行数据检测
+* return   ERROR:输入框类型错误 ; NULL:输入框为空错误; TRUE:正确
+*/
+function doCheck_()
+{
+	var isError=false;
+	var isNull=false;
+	if (Check=="true")
+	{
+		var j=0
+		for (var i=0;i<elements.length;i++)
+		{
+			if (elements[i].IsError=="true")
+			{
+				isError=true;
+			}
+			if (elements[i].NullAble=="false")						//验证是否为空
+			{				
+				if (element.document.body.isNull(elements[i].value))
+				{
+					if (j==0) oFirstNull=elements[i];
+					isNull=true;
+					j++;
+				}
+			}				
+		}
+	}
+	if (isError)
+	{
+		return "ERROR";
+	}
+
+	if (isNull)
+	{
+		return "NULL";
+	}
+	return "TRUE";
+}
+
+/**
+* 对表单对象进行特殊字符串替换
+*/
+function changeChar()
+{
+	
+	for (var i=0;i<elements.length;i++)
+	{
+		if (elements[i].type=="text") elements[i].value=html2Input(elements[i].value);
+		else if (elements[i].type=="textarea") elements[i].value=html2Textarea(elements[i].value);
+	}		
+
+}
+
+/*
+ *特殊字符转换
+ */
+function html2Input(html)
+{    
+    var sValue=html.replace(/"/g,"″");
+	return sValue;
+}
+
+/*
+ *特殊字符转换
+ */
+function html2Textarea(html)
+{
+    var sValue=html.replace(/</g,"〈");
+    sValue=sValue.replace(/>/g,"〉");
+    sValue=sValue.replace(/"/g,"″");
+	return sValue;
+}
+
+
+
+function doSend()
+{
+	if (doCheck_()=="ERROR")
+	{
+		return;
+	}
+	else if (doCheck_()=="NULL")
+	{
+		element.document.body.showNull(oFirstNull);
+		oFirstNull.focus();
+		return;		
+	}
+
+	if (Change=="true")
+	{
+		changeChar();		//替换特殊字符
+	}	
+	
+	var query_string='';
+    var and='';
+    for (var i=0;i<elements.length;i++)
+	{
+        e=elements[i];    
+        if (e.name) 
+		{
+            if (e.type=='select-one') 
+			{
+                element_value=e.options[e.selectedIndex].value;
+            }
+			else if (e.type=='select-multiple')
+			{
+                for (var n=0;n<e.length;n++)
+				{
+                    var op=e.options[n];
+                    if (op.selected)
+					{
+                        query_string+=and+e.name+'='+ element.document.body.str2Url(op.value);
+                        and="&"
+                    }
+                }
+                continue;
+            } 
+			else if (e.type=='checkbox' || e.type=='radio')
+			{
+                if (e.checked==false)
+				{   
+                    continue;   
+                }   
+                element_value=e.value;
+            } 
+			else if (typeof e.value != 'undefined')
+			{
+                element_value=e.value;
+            }
+			else
+			{
+                continue;
+            }
+            query_string += and + e.name + '=' + element.document.body.str2Url(element_value);
+            and="&"
+        }
+    }
+	if (this.action.indexOf("?")!=-1)
+	{
+		elements.document.location.href=this.action + "&" + query_string;
+	}
+	else
+	{
+		elements.document.location.href=this.action + "?" + query_string;
+	}    
+}
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

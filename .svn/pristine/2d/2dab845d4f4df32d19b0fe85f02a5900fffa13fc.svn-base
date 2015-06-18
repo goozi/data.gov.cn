@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_SECURITY_URL-->
+<!--<mapping resource="com/kingtop/base/hbm/BASE_SECURITY_URL.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseSecurityUrl" table="BASE_SECURITY_URL">
+		<id name="id"  column="ID">
+			<generator class="native">
+				<param name="sequence">BASE_SECURITY_URL_ID_SEQU</param>
+			</generator>
+		</id>
+		<property name="securityId"  column="SECURITY_ID"/>
+		<property name="url"  column="URL"/>
+		<property name="query"  column="QUERY"/>
+	</class>
+</hibernate-mapping>

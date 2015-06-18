@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_DOCUMENT-->
+<!--<mapping resource="com/kingtop/xmsl/common/hbm/BASE_DOCUMENT.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseDocument" table="BASE_DOCUMENT">
+		<id name="id"  column="ID">
+			<generator class="native">
+				<param name="sequence">BASE_DOCUMENT_ID_SEQU</param>
+			</generator>
+		</id>
+		<property name="name"  column="NAME"/>
+		<property name="fileName"  column="FILE_NAME"/>
+		<property name="postfix"  column="POSTFIX"/>
+		<property name="createTime"  column="CREATE_TIME"  type="timestamp"/>
+		<property name="sourceCode"  column="SOURCE_CODE"/>
+		<property name="sourceId"  column="SOURCE_ID"/>
+		<property name="sequ"  column="SEQU"/>
+		<property name="fileSize"  column="FILE_SIZE"/>
+		<property name="userId"  column="USER_ID"/>
+	</class>
+</hibernate-mapping>

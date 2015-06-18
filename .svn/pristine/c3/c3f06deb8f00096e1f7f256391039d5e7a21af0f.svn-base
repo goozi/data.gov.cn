@@ -1,0 +1,25 @@
+<%@ page contentType="text/html; charset=GBK" %>
+<%@ include file="../include.jsp" %>
+<html xmlns:kingtop>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<link type="text/css" rel="stylesheet" href="../htc/tree.css" />
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="../js/tree.js"></script>
+<title><%=Config.SystemName%></title>
+</head>
+<body leftmargin="0" topmargin="0" >
+<script type="text/javascript">
+var tree = new KLoadTree("系统功能权限", "securityAction.do?action=createTreeXml");
+document.write(tree);
+tree.expandToLevel(3);
+</script>
+</body>
+</html>
+<script language="JavaScript">
+function doClick(id)
+{	
+	parent.document.all("childFrame").src="user_security_list.jsp?id=" + id;
+}
+</script>
+

@@ -1,0 +1,133 @@
+package com.dhccity.base.entity;
+
+import java.util.*;
+
+import org.light.*;
+
+/**
+ * <p>Title: BASE_SECURITY_URL 表对应类</p>
+ * <p>Description:BASE_SECURITY_URL</p>
+ * <p>Company: dhccity</p>
+ * <p>CreateDate: 2007-01-10 09:18</p>
+ * @author liuxd
+ * @version 1.0
+ */
+
+public class BaseSecurityUrl extends Ado
+{
+	private long id; //ID
+	private long securityId; //模块权限ID
+	private String url; //网址
+	private String query; //请求参数
+
+	//{defaultOrder = "o.id";} //默认的排序方式
+
+	public BaseSecurityUrl()
+	{
+	}
+
+	public BaseSecurityUrl(long id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * 对应字段：[ID]  类型：NUMBER(22)
+	 */
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * 对应字段：[ID]  类型：NUMBER(22)
+	 */
+	public long getId()
+	{
+		return this.id;
+	}
+
+	/**
+	 * 对应字段：[模块权限ID]  类型：NUMBER(12)
+	 */
+	public void setSecurityId(long securityId)
+	{
+		this.securityId = securityId;
+	}
+
+	/**
+	 * 对应字段：[模块权限ID]  类型：NUMBER(12)
+	 */
+	public long getSecurityId()
+	{
+		return this.securityId;
+	}
+
+	/**
+	 * 对应字段：[网址]  类型：VARCHAR2(200)
+	 */
+	public void setUrl(String url)
+	{
+		this.url = url;
+	}
+
+	/**
+	 * 对应字段：[网址]  类型：VARCHAR2(200)
+	 */
+	public String getUrl()
+	{
+		return this.url == null ? "" : this.url;
+	}
+
+	/**
+	 * 对应字段：[请求参数]  类型：VARCHAR2(200)
+	 */
+	public void setQuery(String query)
+	{
+		this.query = query;
+	}
+
+	/**
+	 * 对应字段：[请求参数]  类型：VARCHAR2(200)
+	 */
+	public String getQuery()
+	{
+		return this.query == null ? "" : this.query;
+	}
+
+	//===============================以下为自编辑代码===================================
+
+
+
+
+	/**
+	 * 通过权限ID号查找相关网址
+	 * @param  securityId long		权限ID号
+	 * @return List
+	 */
+	public List findBySecurityId(long securityId)
+	{
+		String hql = "from BaseSecurityUrl o where o.securityId=" + securityId + " order by o.id";
+		return this.findAll(hql);
+	}
+
+	/**
+	 * 通过权限ID号删除数据
+	 * @param securityId long	权限ID
+	 * @param ids		 long[]	ID数组
+	 * @return int
+	 */
+	public static int deleteBySecurityId(long securityId, long[] ids)
+	{
+		String sql = "delete from Base_Security_Url  where security_Id=" + securityId;
+		for (int i = 0; i < ids.length; i++)
+		{
+			if (ids[i] > 0)
+			{
+				sql += " and id<>" + ids[i];
+			}
+		}
+		return new BaseSecurityUrl().executeSql(sql);
+	}
+
+}

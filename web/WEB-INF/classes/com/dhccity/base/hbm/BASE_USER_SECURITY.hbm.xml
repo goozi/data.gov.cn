@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--BASE_USER_SECURITY-->
+<!--<mapping resource="com/kingtop/base/hbm/BASE_USER_SECURITY.hbm.xml"/>-->
+
+<hibernate-mapping package="com.dhccity.base.entity">
+	<class name="BaseUserSecurity" table="BASE_USER_SECURITY">
+		<id name="id"  column="ID">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property name="securityId"  column="SECURITY_ID"/>
+		<property name="securityArray"  column="SECURITY_ARRAY"/>
+		<property name="type"  column="TYPE"/>
+		<property name="departmentId"  column="DEPARTMENT_ID"/>
+		<property name="ownerId"  column="OWNER_ID"/>
+		<property name="sequ"  column="SEQU"/>
+	</class>
+</hibernate-mapping>

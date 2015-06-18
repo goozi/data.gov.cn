@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.dhccity.app.entity">
+	<class name="AppDatasetRelation" table="APP_DATASET_RELATION">
+		<id name="id"  column="ID">
+			<generator class="identity">
+			</generator>
+		</id>
+		<property name="appId"  column="APP_ID"/>
+		<property name="datasetId"  column="DATASET_ID"/>
+		<property name="createTime"  column="CREATE_TIME"/>
+	</class>
+</hibernate-mapping>

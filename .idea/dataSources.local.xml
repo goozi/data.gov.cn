@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Oracle - @HOME_PC" uuid="b21b8e74-c504-4fde-bc3d-0f9dac413863">
+      <secret-storage>master_key</secret-storage>
+      <user-name>dgc</user-name>
+      <schema-pattern>*.DGC</schema-pattern>
+      <default-schemas>*.DGC *.SYS *.SYSTEM</default-schemas>
+    </data-source>
+    <data-source name="Oracle - dgc@123.57.64.21" uuid="a66f0cab-9bdd-477a-ac4c-35a201d54322">
+      <secret-storage>master_key</secret-storage>
+      <user-name>dgc</user-name>
+      <schema-pattern>*.DGC</schema-pattern>
+      <default-schemas>*.DGC *.SYS *.SYSTEM</default-schemas>
+    </data-source>
+  </component>
+</project>

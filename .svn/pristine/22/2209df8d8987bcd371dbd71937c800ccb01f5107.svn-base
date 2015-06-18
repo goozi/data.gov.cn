@@ -1,0 +1,416 @@
+<PUBLIC:COMPONENT >
+
+/**
+ * <p>Title: Input封闭类 </p>
+ * <p>Description:</p>
+ * <p>Company: Kingtop</p>
+ * <p>CreateDate: 2005-05-18 09:36</p>
+ * @author liuxd
+ * @version 1.0
+ */
+
+//=================属性=================
+<PUBLIC:PROPERTY name="MaxByte" />			//MaxByte输入框字输入最大字节
+
+<PUBLIC:PROPERTY name="HelpTitle" />		//HelpTitle输入框字提示帮助信息
+<PUBLIC:PROPERTY name="HelpWidth" />		//HelpWidth帮助框宽度
+
+
+<PUBLIC:PROPERTY name="DataType" />			//输入数据类型
+<PUBLIC:PROPERTY name="NullAble" />			//是否必填
+<PUBLIC:PROPERTY name="ShowNullStar" />		//必填时，是否显示*
+
+<PUBLIC:METHOD   NAME="doCheck"/>			//进行格式检查
+
+<PUBLIC:PROPERTY name="IsError" />			//填入数据是否错误
+
+
+
+//初始化事件
+<PUBLIC:ATTACH event="oncontentready" HANDLER="doInit"/>
+
+
+
+
+<SCRIPT language="javascript">
+var reg;									//正则表达式
+var errorTitle;								//错误提示内容
+var oNullText;								//为空*提示对象
+
+
+/**
+* 初始化
+*/
+function doInit()
+{
+	IsError="false";															//初始化--正确
+
+	var sType = type.toLowerCase();												//调用类型
+	var sTag = tagName.toLowerCase();											//调用名称类型
+
+	if (sTag!="textarea")														//对调用类型进行刷选
+	{
+		if (sType != "text" && sType != "password" ) 
+		{
+			return;
+		}
+	}
+	
+
+	if (HelpTitle!=null||NullAble=="false"||DataType!=null||(!isNaN(MaxByte)&&MaxByte!=null))	//需要特殊处理的输入框
+	{
+		attachEvent("onblur", doBlur);											//失去焦点事件
+		attachEvent("onkeypress", doKeypress);									//响应键盘键入事件（字符健不包括操作键）		
+		attachEvent("onfocus", doFocus);										//获得焦点事件		
+	}
+
+	
+	if (NullAble=="false"&&ShowNullStar==null)														//要求不能不空
+	{
+		var sHTML="<font color='red'></font>"
+		oNullText=element.document.createElement(sHTML);		
+		this.insertAdjacentElement("afterEnd",oNullText);
+		oNullText.innerHTML="*";		
+		if (isNull(value))
+		{
+			oNullText.color="red";
+		}
+		else
+		{
+			oNullText.color="green";
+		}		
+	}
+
+
+	if (DataType!=null)															//要求输入时进行类型验证
+	{
+		style.imeMode="disabled";												//关闭输入法		
+		switch (DataType)									
+		{
+			case "+int":														//正整数
+				reg=/^((\d+)|(0))$/;break;			
+			case "-int":														//负整数
+				reg=/^((-\d+)|(0))$/;break;	
+			case "int":															//整数
+				reg=/^((-\d+)|(\d+)|(0))$/;break;	
+			case "float":														//FLOAT
+				reg=/^((-(\d+\.?\d*)?)|(\d+\.?\d*)|())$/;break;
+			case "+float":														//+FLOAT型
+				reg=/^((\d+\.?\d*)|())$/;break;		
+			case "-float":														//-FLOAT型
+				reg=/^((-(\d+\.?\d*)?)|())$/;break;			
+			case "tel":															//电话
+				reg=/^(((\d+\-?\d*)+\,?)*|())$/;break;		
+			case "mobileTel":													//手机
+				reg=/^(((\d+\-?\d*)+\,?)*|())$/;break;		
+			case "postCode":													//邮政编码
+				reg=/^(\d{6}|())$/;break;	
+			case "email":
+				reg=/^(()|[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\}\~]+\@[a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\}\~]+(\.[a-zA-Z0-9]+)+)$/;break;
+			case "+float2":														//有效小数位为2位
+				reg=/^((\d+\.?\d{2})|(\d+\.?\d{1})|\d+|())$/;break;	
+			case "idCard":														//身份证
+				reg=/^((QT-\S+)|(\d{15})|((\d{17})(X|x|\d{1}))|())$/;break;	
+			case "date":
+				 reg=/^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29))$/;break;	
+
+		}				
+	}
+
+	if(!isNaN(MaxByte)&&MaxByte!=null)											//要求进行字节判断
+	{
+		maxLength=MaxByte;
+	}	
+	
+}
+
+
+
+/**
+* 处理获得焦点事件
+*/
+function doFocus()
+{
+	if (IsError=="true")														//出现输入数据错误
+	{		
+		element.document.body.showMessage(errorTitle,this);			
+	}
+	else if (IsError=="none")
+	{
+		;
+	}
+	else
+	{
+		if (HelpTitle!=null)													//需要帮助提示信息
+		{			
+			if (HelpWidth!=null)
+				element.document.body.showMessage(HelpTitle,HelpWidth,this);
+			else
+				element.document.body.showMessage(HelpTitle,0,this);			
+		}	
+	}
+
+	element.document.body.oncontextmenu=new Function("return true");
+}
+
+/**
+* 处理失去焦点事件
+*/
+function doBlur()
+{
+	
+	if (NullAble=="false"&&ShowNullStar==null)									//要求不能不空
+	{
+		if (element.document.body.isNull(value))
+			oNullText.color="red";
+		else
+			oNullText.color="green";
+	}
+
+	if (HelpTitle!=null||IsError=="true")									
+	{
+	   element.document.body.closeMessage();									//关闭提示
+	}	
+
+	IsError="false";															//设定输入正确
+	if (value!="") doCheck();													//进行数据检查
+
+	element.document.body.oncontextmenu=new Function("return false");
+
+}
+
+/**
+*进行数据检查
+*
+*/
+function doCheck()
+{
+	if (DataType!=null)															//设置输入时验证
+	{
+		if (!reg.test(value))													//格式错误
+		{
+			
+			switch (DataType)									
+			{
+				case "+int":													//正整数
+					errorTitle="请输入一个正整数";break;		
+				case "-int":													//负整数
+					errorTitle="请输入一个负整数";break;		
+				case "int":														//整数
+					errorTitle="请输入一个整数";break;	
+				case "float":													//FLOAT
+					errorTitle="请输入一个有效数";break;	
+				case "+float":													//+FLOAT型
+					errorTitle="请输入一个正有效数";break;	
+				case "-float":													//-FLOAT型
+					errorTitle="请输入一个负效数";break;				
+				case "tel":														//电话型
+					errorTitle="请输入一个准确的电话号码，格式为：0592-2188888,2189999";break;				
+				case "mobileTel":														//电话型
+					errorTitle="请输入一个准确的手机号码，格式为：1332845678,01360692888";break;	
+				case "postCode":												//邮政编码
+					errorTitle="请输入一个六位数的邮政编码";break;		
+				case "email":												//电子邮件
+					errorTitle="请输入一个正确的电子邮件,格式为：abc@163.com";break;		
+				case "+float2":												//有效小数位为2位
+					errorTitle="请输入一个有效小数位为2位的正数,格式为：98.05";break;	
+				case "idCard":													//身份证号码
+					errorTitle="请输入一个15或18位身份证号码或“QT-其它证件号码”，格式为：350225781222623或35022519781222623X";break;	
+				case "date":													//身份证号码
+					errorTitle="请输入一个正确的日期格式，格式为：2005-10-03";break;	
+			}			
+			//checkMaxByte(true);													//字节长度检测
+			IsError="true";	
+			focus();
+			return false;
+		}			
+	}
+	if (!checkMaxByte(false))													//字节长度检测
+	{
+		
+		IsError="true";	
+		focus();
+		return false;
+	}
+	return true;
+	
+}
+
+/**
+* 响应键盘键入事件（字符健不包括操作键）
+*/
+function doKeypress()
+{
+	element.document.body.closeMessage();									//关闭提示
+
+	if (DataType!=null)//设置输入格式
+	{	
+		var isTrueKey=false;												//键入值是否为正确的数据
+		switch (DataType)									
+		{
+			case "+int":													//正整数
+				if (event.keyCode>47 && event.keyCode<58)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "-int":													//负整数
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "int":														//整数
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "float":													//FLOAT
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45||event.keyCode==46)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "+float2":													//有效小数位为2位
+			case "+float":													//+FLOAT型
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==46)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "-float":													//-FLOAT型
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45||event.keyCode==46)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "tel":														//电话
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45||event.keyCode==44)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "mobileTel":														//手机
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45||event.keyCode==44)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "postCode":												//邮编
+				if ((event.keyCode>47 && event.keyCode<58))
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "date":
+				if ((event.keyCode>47 && event.keyCode<58)||event.keyCode==45)
+				{
+					isTrueKey=true;
+				}
+				break;
+			case "idCard":
+			case "email":
+				isTrueKey=true;
+				break;
+		}
+		if (isTrueKey==true)
+		{
+			event.returnValue =true;										//输入值有效
+		}
+		else
+		{
+			event.returnValue =false;
+		}        
+	}	
+	
+}
+
+/*
+ *检证长度
+ *isRegError 检验是否正确
+ *return	FALSE出现错误,True正确
+ */
+function checkMaxByte(isRegError)
+{
+	if (!isNaN(MaxByte)&&MaxByte!=null)
+	{
+		var currLength=element.document.body.getLength(value);
+		if (currLength>MaxByte)
+		{
+			if (isRegError)
+				errorTitle=errorTitle+",输入数据不超过["+MaxByte+"]位";
+			else
+				errorTitle="输入的字符不能超过 "+ MaxByte+" 个字节,您现在已使用 "+currLength+" 个字节";		
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}	
+	return true;
+}
+
+function isEmail(S) 
+{
+	var pass=0;
+	if (window.RegExp)
+	{
+		var tempS="a";
+		var tempReg=new RegExp(tempS);
+		if (tempReg.test(tempS)) pass=1;
+	}
+	if (!pass)
+	return (S.indexOf(".") > 2) && (S.indexOf("@") > 0);
+	var r1=new RegExp("(@.*@)|(\\.\\.)|(@\\.)|(^\\.)");
+	var r2=new RegExp("^[a-zA-Z0-9\\.\\!\\#\\$\\%\\&\\'\\*\\+\\-\\/\\=\\?\\^\\_\\`\\{\\}\\~]*[a-zA-Z0-9\\!\\#\\$\\%\\&\\'\\*\\+\\-\\/\\=\\?\\^\\_\\`\\{\\}\\~]\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$");
+	return (!r1.test(S) && r2.test(S));
+}
+
+/**
+* 验证是否为空
+* 空返回true,否则false
+*/
+function isNull(str)
+{
+	if ((BASEtrim(str)==""))
+		return true;
+	else
+		return false;
+}
+
+/**
+* 字符清除空格
+* 返回清除后的字符串
+*/
+function BASEtrim(str){
+	if (str!=""){
+		lIdx=0;
+		rIdx=str.length;
+		if (BASEtrim.arguments.length==2)
+			act=BASEtrim.arguments[1].toLowerCase();
+		else
+			act="all"
+			for(var i=0;i<str.length;i++){
+		thelStr=str.substring(lIdx,lIdx+1);
+		therStr=str.substring(rIdx,rIdx-1);
+		if ((act=="all" || act=="left") && thelStr==" "){
+			lIdx++;
+		}
+		if ((act=="all" || act=="right") && therStr==" "){
+			rIdx--;
+		}
+			}
+			if (document.all==null){
+				str=str.substring(lIdx,rIdx);
+			}
+			else{
+				str=str.slice(lIdx,rIdx);
+			}
+	}
+	return str;
+}
+
+</SCRIPT>
+</PUBLIC:COMPONENT>
